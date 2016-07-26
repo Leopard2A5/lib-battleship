@@ -5,11 +5,6 @@ const X: usize = 10;
 const Y: usize = 10;
 
 /// The battlefield, central point of every game of battleship.
-/// # Examples
-/// ```
-/// use lib_battleship::battlefield::Battlefield;
-/// let bf = Battlefield::new();
-/// ```
 pub struct Battlefield<'a> {
     cells: Vec<Vec<Cell<'a>>>,
 }
@@ -42,7 +37,16 @@ impl<'a> Battlefield<'a> {
         ret
     }
 
-    /// Place a ship on the battlefield.
+    /// Place a ship on the battlefield. Results in an Ok if the ship could be
+    /// placed at the given coordinates with the given orientation. Otherwirse
+    /// returns an Err.
+    ///
+    /// Arguments:
+    ///
+    /// * `ship` The ship
+    /// * `x` The x coordinate
+    /// * `y` The y coordinate
+    /// * `orientation` The orientation
     pub fn place_ship(&mut self,
                       ship: &mut Ship,
                       x: usize,
