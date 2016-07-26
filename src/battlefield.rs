@@ -4,18 +4,28 @@ use super::ship::Ship;
 const X: usize = 10;
 const Y: usize = 10;
 
+/// The battlefield, central point of every game of battleship.
+/// # Examples
+/// ```
+/// use lib_battleship::battlefield::Battlefield;
+/// let bf = Battlefield::new();
+/// ```
 pub struct Battlefield<'a> {
     cells: Vec<Vec<Cell<'a>>>,
 }
 
+/// The possible results of placing a ship on the battlefield. No data is being passed
+/// here, it's just about success or failure.
 pub type PlaceResult = Result<(), ()>;
 
+/// The possible orientations that a ship can have on the battlefield.
 pub enum Orientation {
     Horizontal,
     Vertical,
 }
 
 impl<'a> Battlefield<'a> {
+    /// Create a new Battlefield.
     pub fn new() -> Battlefield<'a> {
         Battlefield { cells: Battlefield::init_cells() }
     }
@@ -32,6 +42,7 @@ impl<'a> Battlefield<'a> {
         ret
     }
 
+    /// Place a ship on the battlefield.
     pub fn place_ship(&mut self,
                       ship: &mut Ship,
                       x: usize,
