@@ -98,23 +98,15 @@ mod tests {
         let mut ship = Ship::new(3);
         let mut bf = Battlefield::new();
 
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 0, 0, Orientation::Horizontal));
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 5, 5, Orientation::Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 0, Orientation::Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 5, 5, Orientation::Vertical));
 
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 7, 0, Orientation::Horizontal));
-        assert_eq!(Err(()),
-                   bf.place_ship(&mut ship, 8, 0, Orientation::Horizontal));
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 8, 0, Orientation::Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 7, 0, Orientation::Horizontal));
+        assert_eq!(Err(()), bf.place_ship(&mut ship, 8, 0, Orientation::Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 8, 0, Orientation::Vertical));
 
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 0, 7, Orientation::Vertical));
-        assert_eq!(Err(()),
-                   bf.place_ship(&mut ship, 0, 8, Orientation::Vertical));
-        assert_eq!(Ok(()),
-                   bf.place_ship(&mut ship, 0, 8, Orientation::Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 7, Orientation::Vertical));
+        assert_eq!(Err(()), bf.place_ship(&mut ship, 0, 8, Orientation::Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Orientation::Horizontal));
     }
 }
