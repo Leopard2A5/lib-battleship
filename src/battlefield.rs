@@ -109,4 +109,9 @@ mod tests {
         assert_eq!(Err(()), bf.place_ship(&mut ship, 0, 8, Orientation::Vertical));
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Orientation::Horizontal));
     }
+
+    #[test]
+    fn assert_ship_placement_against_set_ships() {
+        // TODO impl
+    }
 }
