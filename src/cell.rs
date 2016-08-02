@@ -1,5 +1,7 @@
 use super::ship::Ship;
 
+/// Represents a cell of the battlefield. A cell is made up of an optional ship reference and
+/// a bool signifying if this cell has been shot at.
 #[derive(Debug, PartialEq)]
 pub struct Cell<'a> {
     ship: Option<&'a Ship<'a>>,
@@ -7,6 +9,7 @@ pub struct Cell<'a> {
 }
 
 impl<'a> Cell<'a> {
+    /// Create a new, empty cell.
     pub fn new() -> Cell<'a> {
         Cell {
             ship: None,
@@ -14,6 +17,7 @@ impl<'a> Cell<'a> {
         }
     }
 
+    /// Sets this cell's shot status to true.
     pub fn shoot(&mut self) {
         self.shot = true;
     }

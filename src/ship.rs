@@ -1,5 +1,6 @@
 use super::cell::Cell;
 
+/// Represents a ship in the game.
 #[derive(Debug, PartialEq)]
 pub struct Ship<'a> {
     length: usize,
@@ -7,6 +8,11 @@ pub struct Ship<'a> {
 }
 
 impl<'a> Ship<'a> {
+    /// Create a new ship.
+    ///
+    /// Arguments:
+    ///
+    /// * `length` the length of the ship
     pub fn new(length: usize) -> Ship<'a> {
         Ship {
             length: length,
@@ -14,6 +20,7 @@ impl<'a> Ship<'a> {
         }
     }
 
+    /// Get this ship's length.
     pub fn length(&self) -> usize {
         self.length
     }
