@@ -56,6 +56,8 @@ impl<'a> Battlefield<'a> {
                       orientation: Orientation)
                       -> PlaceResult {
         try!(self.check_placement_in_bounds(ship, x, y, orientation));
+        let affected_cells = self.get_affected_cells(ship, x, y, orientation);
+
         try!(self.check_placement_against_placed_ships(ship, x, y, orientation));
         Ok(())
     }
@@ -80,6 +82,27 @@ impl<'a> Battlefield<'a> {
         } else {
             Err(())
         }
+    }
+
+    fn get_affected_cells(&self,
+                          ship: &Ship,
+                          x: usize,
+                          y: usize,
+                          orientation: Orientation)
+                          -> Vec<&Cell> {
+        match orientation {
+            Horizontal => {
+                let mut ret = Vec::new();
+                for i in x..(x + ship.length() - 1) {
+                    ret.push(&self.cells.get(y));
+                }
+            },
+            Vertical => {
+                panic!();
+            }
+        }
+
+        Vec::new()
     }
 
     fn check_placement_against_placed_ships(&self,
@@ -134,6 +157,5 @@ mod tests {
         assert_eq!(Ok(()), bf.place_ship(&mut ship1, 0, 0, Horizontal));
         assert_eq!(Err(()), bf.place_ship(&mut ship2, 2, 0, Horizontal));
         assert_eq!(Err(()), bf.place_ship(&mut ship3, 2, 0, Vertical));
-
     }
 }
