@@ -15,6 +15,7 @@ pub struct Battlefield<'a> {
 pub type PlaceResult = Result<(), ()>;
 
 /// The possible orientations that a ship can have on the battlefield.
+#[derive(Copy, Clone)]
 pub enum Orientation {
     Horizontal,
     Vertical,
@@ -54,11 +55,9 @@ impl<'a> Battlefield<'a> {
                       y: usize,
                       orientation: Orientation)
                       -> PlaceResult {
-        if !self.check_placement_in_bounds(ship, x, y, orientation) {
-            Err(())
-        } else {
-            Ok(())
-        }
+        try!(self.check_placement_in_bounds(ship, x, y, orientation));
+        try!(self.check_placement_against_placed_ships(ship, x, y, orientation));
+        Ok(())
     }
 
     fn check_placement_in_bounds(&self,
@@ -66,7 +65,7 @@ impl<'a> Battlefield<'a> {
                                  x: usize,
                                  y: usize,
                                  orientation: Orientation)
-                                 -> bool {
+                                 -> PlaceResult {
         let max_x = match orientation {
             Horizontal => x + ship.length() - 1,
             Vertical => x,
@@ -76,7 +75,20 @@ impl<'a> Battlefield<'a> {
             Vertical => y + ship.length() - 1,
         };
 
-        return max_x < X && max_y < Y;
+        if max_x < X && max_y < Y {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+
+    fn check_placement_against_placed_ships(&self,
+                                            ship: &Ship,
+                                            x: usize,
+                                            y: usize,
+                                            orientation: Orientation)
+                                            -> PlaceResult {
+        Err(())
     }
 }
 
@@ -119,8 +131,9 @@ mod tests {
         let mut ship2 = Ship::new(3);
         let mut ship3 = Ship::new(3);
 
-        bf.place_ship(&mut ship1, 0, 0, Horizontal);
+        assert_eq!(Ok(()), bf.place_ship(&mut ship1, 0, 0, Horizontal));
         assert_eq!(Err(()), bf.place_ship(&mut ship2, 2, 0, Horizontal));
         assert_eq!(Err(()), bf.place_ship(&mut ship3, 2, 0, Vertical));
+
     }
 }
