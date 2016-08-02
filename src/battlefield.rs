@@ -114,6 +114,13 @@ mod tests {
 
     #[test]
     fn assert_ship_placement_against_set_ships() {
-        // TODO impl
+        let mut bf = Battlefield::new();
+        let mut ship1 = Ship::new(3);
+        let mut ship2 = Ship::new(3);
+        let mut ship3 = Ship::new(3);
+
+        bf.place_ship(&mut ship1, 0, 0, Horizontal);
+        assert_eq!(Err(()), bf.place_ship(&mut ship2, 2, 0, Horizontal));
+        assert_eq!(Err(()), bf.place_ship(&mut ship3, 2, 0, Vertical));
     }
 }
