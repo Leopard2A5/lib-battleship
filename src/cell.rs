@@ -21,6 +21,10 @@ impl<'a> Cell<'a> {
     pub fn shoot(&mut self) {
         self.shot = true;
     }
+
+    pub fn ship(&self) -> Option<&'a Ship<'a>> {
+        self.ship
+    }
 }
 
 #[cfg(test)]

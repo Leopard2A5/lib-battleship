@@ -57,8 +57,7 @@ impl<'a> Battlefield<'a> {
                       -> PlaceResult {
         try!(self.check_placement_in_bounds(ship, x, y, orientation));
         let affected_cells = self.get_affected_cells(ship, x, y, orientation);
-
-        try!(self.check_placement_against_placed_ships(ship, x, y, orientation));
+        try!(self.check_placement_against_placed_ships(&affected_cells));
         Ok(())
     }
 
@@ -113,12 +112,13 @@ impl<'a> Battlefield<'a> {
     }
 
     fn check_placement_against_placed_ships(&self,
-                                            ship: &Ship,
-                                            x: usize,
-                                            y: usize,
-                                            orientation: Orientation)
+                                            cells: &Vec<&Cell>)
                                             -> PlaceResult {
-        Err(())
+        if cells.iter().all(|cell| cell.ship().is_none()) {
+            Ok(())
+        } else {
+            Err(())
+        }
     }
 }
 
