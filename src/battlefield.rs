@@ -90,19 +90,26 @@ impl<'a> Battlefield<'a> {
                           y: usize,
                           orientation: Orientation)
                           -> Vec<&Cell> {
+        let mut ret = Vec::new();
+
         match orientation {
             Horizontal => {
-                let mut ret = Vec::new();
                 for i in x..(x + ship.length() - 1) {
-                    ret.push(&self.cells.get(y));
+                    let rowref = self.cells.get(y).expect("Index out of bounds!");
+                    let cellref: &Cell = rowref.get(i).expect("Index out of bounds!");
+                    ret.push(cellref);
                 }
             },
             Vertical => {
-                panic!();
+                for i in y..(y + ship.length() - 1) {
+                    let rowref = self.cells.get(i).expect("Index out of bounds!");
+                    let cellref: &Cell = rowref.get(x).expect("Index out of bounds!");
+                    ret.push(cellref);
+                }
             }
         }
 
-        Vec::new()
+        ret
     }
 
     fn check_placement_against_placed_ships(&self,
