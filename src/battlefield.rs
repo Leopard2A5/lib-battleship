@@ -1,5 +1,6 @@
 use super::cell::Cell;
 use super::ship::Ship;
+use self::Orientation::*;
 
 const X: usize = 10;
 const Y: usize = 10;
@@ -67,12 +68,12 @@ impl<'a> Battlefield<'a> {
                                  orientation: Orientation)
                                  -> bool {
         let max_x = match orientation {
-            Orientation::Horizontal => x + ship.length() - 1,
-            Orientation::Vertical => x,
+            Horizontal => x + ship.length() - 1,
+            Vertical => x,
         };
         let max_y = match orientation {
-            Orientation::Horizontal => y,
-            Orientation::Vertical => y + ship.length() - 1,
+            Horizontal => y,
+            Vertical => y + ship.length() - 1,
         };
 
         return max_x < X && max_y < Y;
@@ -81,7 +82,8 @@ impl<'a> Battlefield<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Battlefield, Orientation, X, Y};
+    use super::{Battlefield, X, Y};
+    use super::Orientation::*;
     use super::super::ship::Ship;
 
     #[test]
@@ -98,16 +100,16 @@ mod tests {
         let mut ship = Ship::new(3);
         let mut bf = Battlefield::new();
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 0, Orientation::Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 5, 5, Orientation::Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 0, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 5, 5, Vertical));
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 7, 0, Orientation::Horizontal));
-        assert_eq!(Err(()), bf.place_ship(&mut ship, 8, 0, Orientation::Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 8, 0, Orientation::Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 7, 0, Horizontal));
+        assert_eq!(Err(()), bf.place_ship(&mut ship, 8, 0, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 8, 0, Vertical));
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 7, Orientation::Vertical));
-        assert_eq!(Err(()), bf.place_ship(&mut ship, 0, 8, Orientation::Vertical));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Orientation::Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 7, Vertical));
+        assert_eq!(Err(()), bf.place_ship(&mut ship, 0, 8, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Horizontal));
     }
 
     #[test]
