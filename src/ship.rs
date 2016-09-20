@@ -2,21 +2,19 @@ use super::cell::Cell;
 
 /// Represents a ship in the game.
 #[derive(Debug, PartialEq)]
-pub struct Ship<'a> {
-    length: usize,
-    cells: Vec<&'a Cell<'a>>,
+pub struct Ship {
+    length: usize
 }
 
-impl<'a> Ship<'a> {
+impl Ship {
     /// Create a new ship.
     ///
     /// Arguments:
     ///
     /// * `length` the length of the ship
-    pub fn new(length: usize) -> Ship<'a> {
+    pub fn new(length: usize) -> Ship {
         Ship {
             length: length,
-            cells: Vec::new(),
         }
     }
 

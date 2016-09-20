@@ -4,7 +4,7 @@ use super::ship::Ship;
 /// a bool signifying if this cell has been shot at.
 #[derive(Debug, PartialEq)]
 pub struct Cell<'a> {
-    ship: Option<&'a Ship<'a>>,
+    ship: Option<&'a Ship>,
     shot: bool,
 }
 
@@ -22,8 +22,13 @@ impl<'a> Cell<'a> {
         self.shot = true;
     }
 
-    pub fn ship(&self) -> Option<&'a Ship<'a>> {
+    pub fn get_ship(&self) -> Option<&'a Ship> {
         self.ship
+    }
+
+    pub fn set_ship(&mut self,
+                    ship: &'a Ship) {
+        self.ship = Some(ship)
     }
 }
 

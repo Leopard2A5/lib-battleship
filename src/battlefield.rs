@@ -114,7 +114,7 @@ impl<'a> Battlefield<'a> {
     fn check_placement_against_placed_ships(&self,
                                             cells: &Vec<&Cell>)
                                             -> PlaceResult {
-        if cells.iter().all(|cell| cell.ship().is_none()) {
+        if cells.iter().all(|cell| cell.get_ship().is_none()) {
             Ok(())
         } else {
             Err(())
