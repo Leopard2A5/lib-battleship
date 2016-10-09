@@ -29,9 +29,9 @@ impl<'a> Battlefield<'a> {
 
     fn init_cells() -> Vec<Vec<Cell<'a>>> {
         let mut ret = Vec::new();
-        for y in 0..Y {
+        for _ in 0..Y {
             let mut line = Vec::new();
-            for x in 0..X {
+            for _ in 0..X {
                 line.push(Cell::new())
             }
             ret.push(line);
