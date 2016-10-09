@@ -1,5 +1,3 @@
-use super::cell::Cell;
-
 /// Represents a ship in the game.
 #[derive(Debug, PartialEq)]
 pub struct Ship {
