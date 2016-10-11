@@ -57,14 +57,14 @@ impl<'a> Battlefield<'a> {
     /// * `y` The y coordinate
     /// * `orientation` The orientation
     pub fn place_ship(&mut self,
-                      ship: &mut Ship,
+                      ship: &'a Ship,
                       x: usize,
                       y: usize,
                       orientation: Orientation)
                       -> PlaceResult {
         try!(self.check_placement_in_bounds(ship, x, y, orientation));
-        let affected_cells = self.get_affected_cells(ship, x, y, orientation);
-        try!(self.check_placement_against_placed_ships(&affected_cells));
+        try!(self.check_placement_against_placed_ships(ship, x, y, orientation));
+        self.do_place_ship(ship, x, y, orientation);
         Ok(())
     }
 
@@ -90,41 +90,56 @@ impl<'a> Battlefield<'a> {
         }
     }
 
-    fn get_affected_cells(&self,
-                          ship: &Ship,
-                          x: usize,
-                          y: usize,
-                          orientation: Orientation)
-                          -> Vec<&Cell> {
-        let mut ret = Vec::new();
-
+    fn check_placement_against_placed_ships(&self,
+                                            ship: &Ship,
+                                            x: usize,
+                                            y: usize,
+                                            orientation: Orientation)
+                                            -> PlaceResult {
         match orientation {
             Horizontal => {
                 for i in x..(x + ship.length() - 1) {
-                    let rowref = self.cells.get(y).expect("Index out of bounds!");
-                    let cellref: &Cell = rowref.get(i).expect("Index out of bounds!");
-                    ret.push(cellref);
+                    let rowref = self.cells.get(y).unwrap();
+                    let cellref: &Cell = rowref.get(i).unwrap();
+                    if cellref.get_ship().is_some() {
+                        return Err(CellOccupied)
+                    }
                 }
             },
             Vertical => {
                 for i in y..(y + ship.length() - 1) {
-                    let rowref = self.cells.get(i).expect("Index out of bounds!");
-                    let cellref: &Cell = rowref.get(x).expect("Index out of bounds!");
-                    ret.push(cellref);
+                    let rowref = self.cells.get(i).unwrap();
+                    let cellref: &Cell = rowref.get(x).unwrap();
+                    if cellref.get_ship().is_some() {
+                        return Err(CellOccupied)
+                    }
                 }
             }
         }
 
-        ret
+        Ok(())
     }
 
-    fn check_placement_against_placed_ships(&self,
-                                            cells: &Vec<&Cell>)
-                                            -> PlaceResult {
-        if cells.iter().all(|cell| cell.get_ship().is_none()) {
-            Ok(())
-        } else {
-            Err(CellOccupied)
+    fn do_place_ship(&mut self,
+                     ship: &'a Ship,
+                     x: usize,
+                     y: usize,
+                     orientation: Orientation) {
+        match orientation {
+            Horizontal => {
+                for i in x..(x + ship.length() - 1) {
+                    let rowref = self.cells.get_mut(y).unwrap();
+                    let cellref: &mut Cell = rowref.get_mut(i).unwrap();
+                    // cellref.set_ship(ship);
+                }
+            },
+            Vertical => {
+                for i in y..(y + ship.length() - 1) {
+                    let rowref = self.cells.get_mut(i).unwrap();
+                    let cellref: &mut Cell = rowref.get_mut(x).unwrap();
+                    // cellref.set_ship(ship);
+                }
+            }
         }
     }
 }
@@ -147,30 +162,37 @@ mod tests {
 
     #[test]
     fn assert_ship_placement_only_in_bounds() {
-        let mut ship = Ship::new(3);
+        let ship1 = Ship::new(3);
+        let ship2 = Ship::new(3);
+        let ship3 = Ship::new(3);
+        let ship4 = Ship::new(3);
+        let ship5 = Ship::new(3);
+        let ship6 = Ship::new(3);
+        let ship7 = Ship::new(3);
+        let ship8 = Ship::new(3);
         let mut bf = Battlefield::new();
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 0, Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 5, 5, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&ship2, 5, 5, Vertical));
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 7, 0, Horizontal));
-        assert_eq!(Err(OutOfBounds), bf.place_ship(&mut ship, 8, 0, Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 8, 0, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship3, 7, 0, Horizontal));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship4, 8, 0, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&ship5, 8, 0, Vertical));
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 7, Vertical));
-        assert_eq!(Err(OutOfBounds), bf.place_ship(&mut ship, 0, 8, Vertical));
-        assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&ship6, 0, 7, Vertical));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship7, 0, 8, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship8, 0, 8, Horizontal));
     }
 
     #[test]
     fn assert_ship_placement_against_set_ships() {
+        let ship1 = Ship::new(3);
+        let ship2 = Ship::new(3);
+        let ship3 = Ship::new(3);
         let mut bf = Battlefield::new();
-        let mut ship1 = Ship::new(3);
-        let mut ship2 = Ship::new(3);
-        let mut ship3 = Ship::new(3);
 
-        assert_eq!(Ok(()), bf.place_ship(&mut ship1, 0, 0, Horizontal));
-        assert_eq!(Err(CellOccupied), bf.place_ship(&mut ship2, 2, 0, Horizontal));
-        assert_eq!(Err(CellOccupied), bf.place_ship(&mut ship3, 2, 0, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0, Horizontal));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&ship3, 2, 0, Vertical));
     }
 }
