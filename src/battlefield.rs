@@ -1,6 +1,7 @@
 use super::cell::Cell;
 use super::ship::Ship;
 use self::Orientation::*;
+use self::PlaceResultErr::*;
 
 const X: usize = 10;
 const Y: usize = 10;
@@ -10,9 +11,15 @@ pub struct Battlefield<'a> {
     cells: Vec<Vec<Cell<'a>>>,
 }
 
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum PlaceResultErr {
+    OutOfBounds,
+    CellOccupied
+}
+
 /// The possible results of placing a ship on the battlefield. No data is being passed
 /// here, it's just about success or failure.
-pub type PlaceResult = Result<(), ()>;
+pub type PlaceResult = Result<(), PlaceResultErr>;
 
 /// The possible orientations that a ship can have on the battlefield.
 #[derive(Copy, Clone)]
@@ -79,7 +86,7 @@ impl<'a> Battlefield<'a> {
         if max_x < X && max_y < Y {
             Ok(())
         } else {
-            Err(())
+            Err(OutOfBounds)
         }
     }
 
@@ -117,7 +124,7 @@ impl<'a> Battlefield<'a> {
         if cells.iter().all(|cell| cell.get_ship().is_none()) {
             Ok(())
         } else {
-            Err(())
+            Err(CellOccupied)
         }
     }
 }
@@ -126,6 +133,7 @@ impl<'a> Battlefield<'a> {
 mod tests {
     use super::{Battlefield, X, Y};
     use super::Orientation::*;
+    use super::PlaceResultErr::*;
     use super::super::ship::Ship;
 
     #[test]
@@ -146,11 +154,11 @@ mod tests {
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 5, 5, Vertical));
 
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 7, 0, Horizontal));
-        assert_eq!(Err(()), bf.place_ship(&mut ship, 8, 0, Horizontal));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&mut ship, 8, 0, Horizontal));
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 8, 0, Vertical));
 
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 7, Vertical));
-        assert_eq!(Err(()), bf.place_ship(&mut ship, 0, 8, Vertical));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&mut ship, 0, 8, Vertical));
         assert_eq!(Ok(()), bf.place_ship(&mut ship, 0, 8, Horizontal));
     }
 
@@ -162,7 +170,7 @@ mod tests {
         let mut ship3 = Ship::new(3);
 
         assert_eq!(Ok(()), bf.place_ship(&mut ship1, 0, 0, Horizontal));
-        assert_eq!(Err(()), bf.place_ship(&mut ship2, 2, 0, Horizontal));
-        assert_eq!(Err(()), bf.place_ship(&mut ship3, 2, 0, Vertical));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&mut ship2, 2, 0, Horizontal));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&mut ship3, 2, 0, Vertical));
     }
 }
