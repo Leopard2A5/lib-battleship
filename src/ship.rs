@@ -1,5 +1,5 @@
 /// The possible orientations that a ship can have on the battlefield.
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Orientation {
     Horizontal,
     Vertical,
@@ -8,7 +8,8 @@ pub enum Orientation {
 /// Represents a ship in the game.
 #[derive(Debug, PartialEq)]
 pub struct Ship {
-    length: usize
+    length: usize,
+    orientation: Orientation,
 }
 
 impl Ship {
@@ -17,14 +18,21 @@ impl Ship {
     /// Arguments:
     ///
     /// * `length` the length of the ship
-    pub fn new(length: usize) -> Ship {
+    pub fn new(length: usize,
+               orientation: Orientation) -> Ship {
         Ship {
             length: length,
+            orientation: orientation
         }
     }
 
     /// Get this ship's length.
     pub fn length(&self) -> usize {
         self.length
+    }
+
+    /// Get this ship's orientation.
+    pub fn orientation(&self) -> Orientation {
+        self.orientation
     }
 }

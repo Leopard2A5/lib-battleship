@@ -156,14 +156,14 @@ mod tests {
 
     #[test]
     fn assert_ship_placement_only_in_bounds() {
-        let ship1 = Ship::new(3);
-        let ship2 = Ship::new(3);
-        let ship3 = Ship::new(3);
-        let ship4 = Ship::new(3);
-        let ship5 = Ship::new(3);
-        let ship6 = Ship::new(3);
-        let ship7 = Ship::new(3);
-        let ship8 = Ship::new(3);
+        let ship1 = Ship::new(3, Horizontal);
+        let ship2 = Ship::new(3, Vertical);
+        let ship3 = Ship::new(3, Horizontal);
+        let ship4 = Ship::new(3, Horizontal);
+        let ship5 = Ship::new(3, Vertical);
+        let ship6 = Ship::new(3, Vertical);
+        let ship7 = Ship::new(3, Vertical);
+        let ship8 = Ship::new(3, Horizontal);
         let mut bf = Battlefield::new();
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
@@ -180,9 +180,9 @@ mod tests {
 
     #[test]
     fn assert_ship_placement_against_set_ships() {
-        let ship1 = Ship::new(3);
-        let ship2 = Ship::new(3);
-        let ship3 = Ship::new(3);
+        let ship1 = Ship::new(3, Horizontal);
+        let ship2 = Ship::new(3, Horizontal);
+        let ship3 = Ship::new(3, Vertical);
         let mut bf = Battlefield::new();
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
