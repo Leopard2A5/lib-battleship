@@ -1,6 +1,5 @@
 use super::cell::Cell;
 use super::ship::Ship;
-use super::ship::Orientation;
 use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
 
@@ -53,26 +52,24 @@ impl<'a> Battlefield<'a> {
     pub fn place_ship(&mut self,
                       ship: &'a Ship,
                       x: usize,
-                      y: usize,
-                      orientation: Orientation)
+                      y: usize)
                       -> PlaceResult {
-        try!(self.check_placement_in_bounds(ship, x, y, orientation));
-        try!(self.check_placement_against_placed_ships(ship, x, y, orientation));
-        self.do_place_ship(ship, x, y, orientation);
+        try!(self.check_placement_in_bounds(ship, x, y));
+        try!(self.check_placement_against_placed_ships(ship, x, y));
+        self.do_place_ship(ship, x, y);
         Ok(())
     }
 
     fn check_placement_in_bounds(&self,
                                  ship: &Ship,
                                  x: usize,
-                                 y: usize,
-                                 orientation: Orientation)
+                                 y: usize)
                                  -> PlaceResult {
-        let max_x = match orientation {
+        let max_x = match ship.orientation() {
             Horizontal => x + ship.length() - 1,
             Vertical => x,
         };
-        let max_y = match orientation {
+        let max_y = match ship.orientation() {
             Horizontal => y,
             Vertical => y + ship.length() - 1,
         };
@@ -87,10 +84,9 @@ impl<'a> Battlefield<'a> {
     fn check_placement_against_placed_ships(&self,
                                             ship: &Ship,
                                             x: usize,
-                                            y: usize,
-                                            orientation: Orientation)
+                                            y: usize)
                                             -> PlaceResult {
-        match orientation {
+        match ship.orientation() {
             Horizontal => {
                 for i in x..(x + ship.length()) {
                     let rowref = self.cells.get(y).unwrap();
@@ -117,9 +113,8 @@ impl<'a> Battlefield<'a> {
     fn do_place_ship(&mut self,
                      ship: &'a Ship,
                      x: usize,
-                     y: usize,
-                     orientation: Orientation) {
-        match orientation {
+                     y: usize) {
+        match ship.orientation() {
             Horizontal => {
                 for i in x..(x + ship.length()) {
                     let rowref = self.cells.get_mut(y).unwrap();
@@ -166,16 +161,16 @@ mod tests {
         let ship8 = Ship::new(3, Horizontal);
         let mut bf = Battlefield::new();
 
-        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&ship2, 5, 5, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
+        assert_eq!(Ok(()), bf.place_ship(&ship2, 5, 5));
 
-        assert_eq!(Ok(()), bf.place_ship(&ship3, 7, 0, Horizontal));
-        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship4, 8, 0, Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&ship5, 8, 1, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship3, 7, 0));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship4, 8, 0));
+        assert_eq!(Ok(()), bf.place_ship(&ship5, 8, 1));
 
-        assert_eq!(Ok(()), bf.place_ship(&ship6, 0, 7, Vertical));
-        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship7, 1, 8, Vertical));
-        assert_eq!(Ok(()), bf.place_ship(&ship8, 1, 8, Horizontal));
+        assert_eq!(Ok(()), bf.place_ship(&ship6, 0, 7));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship7, 1, 8));
+        assert_eq!(Ok(()), bf.place_ship(&ship8, 1, 8));
     }
 
     #[test]
@@ -185,8 +180,8 @@ mod tests {
         let ship3 = Ship::new(3, Vertical);
         let mut bf = Battlefield::new();
 
-        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0, Horizontal));
-        assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0, Horizontal));
-        assert_eq!(Err(CellOccupied), bf.place_ship(&ship3, 2, 0, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0));
+        assert_eq!(Err(CellOccupied), bf.place_ship(&ship3, 2, 0));
     }
 }
