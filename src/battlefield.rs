@@ -3,13 +3,6 @@ use super::ship::Ship;
 use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
 
-/// The battlefield, central point of every game of battleship.
-pub struct Battlefield<'a> {
-    cells: Vec<Vec<Cell<'a>>>,
-    width: usize,
-    height: usize,
-}
-
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PlaceResultErr {
     OutOfBounds,
@@ -19,6 +12,13 @@ pub enum PlaceResultErr {
 /// The possible results of placing a ship on the battlefield. No data is being passed
 /// here, it's just about success or failure.
 pub type PlaceResult = Result<(), PlaceResultErr>;
+
+/// The battlefield, central point of every game of battleship.
+pub struct Battlefield<'a> {
+    cells: Vec<Vec<Cell<'a>>>,
+    width: usize,
+    height: usize,
+}
 
 impl<'a> Battlefield<'a> {
     /// Create a new Battlefield.
