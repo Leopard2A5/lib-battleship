@@ -1,6 +1,7 @@
 use super::cell::Cell;
 use super::ship::Ship;
-use self::Orientation::*;
+use super::ship::Orientation;
+use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
 
 const X: usize = 10;
@@ -20,13 +21,6 @@ pub enum PlaceResultErr {
 /// The possible results of placing a ship on the battlefield. No data is being passed
 /// here, it's just about success or failure.
 pub type PlaceResult = Result<(), PlaceResultErr>;
-
-/// The possible orientations that a ship can have on the battlefield.
-#[derive(Copy, Clone)]
-pub enum Orientation {
-    Horizontal,
-    Vertical,
-}
 
 impl<'a> Battlefield<'a> {
     /// Create a new Battlefield.
@@ -147,9 +141,9 @@ impl<'a> Battlefield<'a> {
 #[cfg(test)]
 mod tests {
     use super::{Battlefield, X, Y};
-    use super::Orientation::*;
     use super::PlaceResultErr::*;
     use super::super::ship::Ship;
+    use super::super::ship::Orientation::*;
 
     #[test]
     fn assert_new_battlefield_has_correct_size() {

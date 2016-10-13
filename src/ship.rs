@@ -1,3 +1,10 @@
+/// The possible orientations that a ship can have on the battlefield.
+#[derive(Copy, Clone)]
+pub enum Orientation {
+    Horizontal,
+    Vertical,
+}
+
 /// Represents a ship in the game.
 #[derive(Debug, PartialEq)]
 pub struct Ship {
