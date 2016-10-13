@@ -3,12 +3,11 @@ use super::ship::Ship;
 use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
 
-const X: usize = 10;
-const Y: usize = 10;
-
 /// The battlefield, central point of every game of battleship.
 pub struct Battlefield<'a> {
     cells: Vec<Vec<Cell<'a>>>,
+    width: usize,
+    height: usize,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -23,15 +22,21 @@ pub type PlaceResult = Result<(), PlaceResultErr>;
 
 impl<'a> Battlefield<'a> {
     /// Create a new Battlefield.
-    pub fn new() -> Battlefield<'a> {
-        Battlefield { cells: Battlefield::init_cells() }
+    pub fn new(width: usize,
+               height: usize) -> Battlefield<'a> {
+        Battlefield {
+            cells: Battlefield::init_cells(width, height),
+            width: width,
+            height: height,
+        }
     }
 
-    fn init_cells() -> Vec<Vec<Cell<'a>>> {
+    fn init_cells(width: usize,
+                   height: usize) -> Vec<Vec<Cell<'a>>> {
         let mut ret = Vec::new();
-        for _ in 0..Y {
+        for _ in 0..height {
             let mut line = Vec::new();
-            for _ in 0..X {
+            for _ in 0..width {
                 line.push(Cell::new())
             }
             ret.push(line);
@@ -74,7 +79,7 @@ impl<'a> Battlefield<'a> {
             Vertical => y + ship.length() - 1,
         };
 
-        if max_x < X && max_y < Y {
+        if max_x < self.width && max_y < self.height {
             Ok(())
         } else {
             Err(OutOfBounds)
@@ -135,17 +140,17 @@ impl<'a> Battlefield<'a> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Battlefield, X, Y};
+    use super::Battlefield;
     use super::PlaceResultErr::*;
     use super::super::ship::Ship;
     use super::super::ship::Orientation::*;
 
     #[test]
     fn assert_new_battlefield_has_correct_size() {
-        let bf = Battlefield::new();
-        assert_eq!(bf.cells.len(), Y);
+        let bf = Battlefield::new(10, 10);
+        assert_eq!(bf.cells.len(), 10);
         for vec in bf.cells.iter() {
-            assert_eq!(vec.len(), X);
+            assert_eq!(vec.len(), 10);
         }
     }
 
@@ -159,7 +164,7 @@ mod tests {
         let ship6 = Ship::new(3, Vertical);
         let ship7 = Ship::new(3, Vertical);
         let ship8 = Ship::new(3, Horizontal);
-        let mut bf = Battlefield::new();
+        let mut bf = Battlefield::new(10, 10);
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
         assert_eq!(Ok(()), bf.place_ship(&ship2, 5, 5));
@@ -178,7 +183,7 @@ mod tests {
         let ship1 = Ship::new(3, Horizontal);
         let ship2 = Ship::new(3, Horizontal);
         let ship3 = Ship::new(3, Vertical);
-        let mut bf = Battlefield::new();
+        let mut bf = Battlefield::new(10, 10);
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
         assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0));

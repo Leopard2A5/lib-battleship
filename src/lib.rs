@@ -4,7 +4,7 @@
 //! # Examples
 //! ```
 //! use lib_battleship::battlefield::Battlefield;
-//! let bf = Battlefield::new();
+//! let bf = Battlefield::new(10, 10);
 //! ```
 
 pub mod battlefield;
