@@ -177,11 +177,11 @@ mod tests {
 
         assert_eq!(Ok(()), bf.place_ship(&ship3, 7, 0, Horizontal));
         assert_eq!(Err(OutOfBounds), bf.place_ship(&ship4, 8, 0, Horizontal));
-        assert_eq!(Ok(()), bf.place_ship(&ship5, 8, 0, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship5, 8, 1, Vertical));
 
         assert_eq!(Ok(()), bf.place_ship(&ship6, 0, 7, Vertical));
-        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship7, 0, 8, Vertical));
-        assert_eq!(Ok(()), bf.place_ship(&ship8, 0, 8, Horizontal));
+        assert_eq!(Err(OutOfBounds), bf.place_ship(&ship7, 1, 8, Vertical));
+        assert_eq!(Ok(()), bf.place_ship(&ship8, 1, 8, Horizontal));
     }
 
     #[test]
