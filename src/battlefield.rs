@@ -98,7 +98,7 @@ impl<'a> Battlefield<'a> {
                                             -> PlaceResult {
         match orientation {
             Horizontal => {
-                for i in x..(x + ship.length() - 1) {
+                for i in x..(x + ship.length()) {
                     let rowref = self.cells.get(y).unwrap();
                     let cellref: &Cell = rowref.get(i).unwrap();
                     if cellref.get_ship().is_some() {
@@ -107,7 +107,7 @@ impl<'a> Battlefield<'a> {
                 }
             },
             Vertical => {
-                for i in y..(y + ship.length() - 1) {
+                for i in y..(y + ship.length()) {
                     let rowref = self.cells.get(i).unwrap();
                     let cellref: &Cell = rowref.get(x).unwrap();
                     if cellref.get_ship().is_some() {
@@ -127,17 +127,17 @@ impl<'a> Battlefield<'a> {
                      orientation: Orientation) {
         match orientation {
             Horizontal => {
-                for i in x..(x + ship.length() - 1) {
+                for i in x..(x + ship.length()) {
                     let rowref = self.cells.get_mut(y).unwrap();
                     let cellref: &mut Cell = rowref.get_mut(i).unwrap();
-                    // cellref.set_ship(ship);
+                    cellref.set_ship(ship);
                 }
             },
             Vertical => {
-                for i in y..(y + ship.length() - 1) {
+                for i in y..(y + ship.length()) {
                     let rowref = self.cells.get_mut(i).unwrap();
                     let cellref: &mut Cell = rowref.get_mut(x).unwrap();
-                    // cellref.set_ship(ship);
+                    cellref.set_ship(ship);
                 }
             }
         }
