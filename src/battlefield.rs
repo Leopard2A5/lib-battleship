@@ -44,6 +44,16 @@ impl<'a> Battlefield<'a> {
         ret
     }
 
+    /// Returns the battlefield's width.
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    /// Returns the battlefield's height.
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     /// Place a ship on the battlefield. Results in an Ok if the ship could be
     /// placed at the given coordinates with the given orientation. Otherwirse
     /// returns an Err.
@@ -144,6 +154,17 @@ mod tests {
     use super::PlaceResultErr::*;
     use super::super::ship::Ship;
     use super::super::ship::Orientation::*;
+
+    #[test]
+    fn assert_battlefield_returns_dimensions() {
+        let bf = Battlefield::new(1, 2);
+        assert_eq!(1, bf.width());
+        assert_eq!(2, bf.height());
+
+        let bf = Battlefield::new(4, 7);
+        assert_eq!(4, bf.width());
+        assert_eq!(7, bf.height());
+    }
 
     #[test]
     fn assert_new_battlefield_has_correct_size() {
