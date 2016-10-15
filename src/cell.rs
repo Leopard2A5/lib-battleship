@@ -22,6 +22,10 @@ impl<'a> Cell<'a> {
         self.shot = true;
     }
 
+    pub fn is_shot(&self) -> bool {
+        self.shot
+    }
+
     pub fn get_ship(&self) -> Option<&'a Ship> {
         self.ship
     }

@@ -76,12 +76,16 @@ impl<'a> Battlefield<'a> {
                  y: usize) -> ShotResult {
         self.cells.get_mut(y)
             .and_then(|row| row.get_mut(x))
-            .and_then(|cell| {
-                cell.shoot();
-                cell.get_ship()
-                    .map_or(Some(Miss), |_| Some(Hit))
-            })
             .ok_or(ShotResultErr::OutOfBounds)
+            .and_then(|cell| {
+                if cell.is_shot() {
+                    Err(ShotResultErr::AlreadyShot)
+                } else {
+                    cell.shoot();
+                    cell.get_ship()
+                        .map_or(Ok(Miss), |_| Ok(Hit))
+                }
+            })
      }
 
     /// Place a ship on the battlefield. Results in an Ok if the ship could be
@@ -185,6 +189,7 @@ mod tests {
     use super::super::ship::Ship;
     use super::super::ship::Orientation::*;
     use super::ShotResultOk::*;
+    use super::ShotResultErr;
 
     #[test]
     fn assert_battlefield_returns_dimensions() {
@@ -256,5 +261,15 @@ mod tests {
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
         assert_eq!(Ok(Hit), bf.shoot(0, 0));
+    }
+
+    #[test]
+    fn assert_shooting_at_filled_cells_twice_is_an_error() {
+        let ship = Ship::new(1, Horizontal);
+        let mut bf = Battlefield::new(3, 3);
+        bf.place_ship(&ship, 0, 0).expect("Must work");
+
+        bf.shoot(0, 0).expect("must work");
+        assert_eq!(Err(ShotResultErr::AlreadyShot), bf.shoot(0, 0));
     }
 }
