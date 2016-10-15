@@ -248,6 +248,13 @@ mod tests {
     }
 
     #[test]
+    fn assert_shooting_out_of_bounds_is_an_error() {
+        let mut bf = Battlefield::new(3, 3);
+        assert_eq!(Err(ShotResultErr::OutOfBounds), bf.shoot(3, 0));
+        assert_eq!(Err(ShotResultErr::OutOfBounds), bf.shoot(0, 3));
+    }
+
+    #[test]
     fn assert_shooting_at_empty_cells_is_a_miss() {
         let mut bf = Battlefield::new(3, 3);
         assert_eq!(Ok(Miss), bf.shoot(0, 0));
