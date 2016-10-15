@@ -2,6 +2,7 @@ use super::cell::Cell;
 use super::ship::Ship;
 use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
+use self::ShotResultOk::*;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PlaceResultErr {
@@ -9,9 +10,25 @@ pub enum PlaceResultErr {
     CellOccupied
 }
 
-/// The possible results of placing a ship on the battlefield. No data is being passed
-/// here, it's just about success or failure.
+/// The possible results of placing a ship on the battlefield.
 pub type PlaceResult = Result<(), PlaceResultErr>;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum ShotResultOk {
+    Miss,
+    Hit,
+    ShipDestroyed,
+    WinningShot
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum ShotResultErr {
+    OutOfBounds,
+    AlreadyShot
+}
+
+/// The possible outcomes of shooting at a cell on the battlefield.
+pub type ShotResult = Result<ShotResultOk, ShotResultErr>;
 
 /// The battlefield, central point of every game of battleship.
 pub struct Battlefield<'a> {
@@ -53,6 +70,19 @@ impl<'a> Battlefield<'a> {
     pub fn height(&self) -> usize {
         self.height
     }
+
+    pub fn shoot(&mut self,
+                 x: usize,
+                 y: usize) -> ShotResult {
+        self.cells.get_mut(y)
+            .and_then(|row| row.get_mut(x))
+            .and_then(|cell| {
+                cell.shoot();
+                cell.get_ship()
+                    .map_or(Some(Miss), |_| Some(Hit))
+            })
+            .ok_or(ShotResultErr::OutOfBounds)
+     }
 
     /// Place a ship on the battlefield. Results in an Ok if the ship could be
     /// placed at the given coordinates with the given orientation. Otherwirse
@@ -154,6 +184,7 @@ mod tests {
     use super::PlaceResultErr::*;
     use super::super::ship::Ship;
     use super::super::ship::Orientation::*;
+    use super::ShotResultOk::*;
 
     #[test]
     fn assert_battlefield_returns_dimensions() {
@@ -209,5 +240,21 @@ mod tests {
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
         assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0));
         assert_eq!(Err(CellOccupied), bf.place_ship(&ship3, 2, 0));
+    }
+
+    #[test]
+    fn assert_shooting_at_empty_cells_is_a_miss() {
+        let mut bf = Battlefield::new(3, 3);
+        assert_eq!(Ok(Miss), bf.shoot(0, 0));
+        assert_eq!(Ok(Miss), bf.shoot(1, 2));
+    }
+
+    #[test]
+    fn assert_shooting_at_filled_cells_is_a_hit() {
+        let ship = Ship::new(1, Horizontal);
+        let mut bf = Battlefield::new(3, 3);
+        bf.place_ship(&ship, 0, 0).expect("Must work");
+
+        assert_eq!(Ok(Hit), bf.shoot(0, 0));
     }
 }
