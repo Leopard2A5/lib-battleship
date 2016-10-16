@@ -86,7 +86,7 @@ impl<'a> Battlefield<'a> {
                         .map_or(Ok(Miss), |_| Ok(Hit))
                 }
             })
-     }
+    }
 
     /// Place a ship on the battlefield. Results in an Ok if the ship could be
     /// placed at the given coordinates with the given orientation. Otherwirse
