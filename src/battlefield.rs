@@ -45,7 +45,7 @@ pub struct Battlefield<'a> {
 }
 
 impl<'a> Battlefield<'a> {
-    /// Create a new Battlefield.
+    /// Create a new Battlefield. Width and height must be > 1.
     pub fn new(width: usize,
                height: usize) -> Result<Battlefield<'a>, BattlefieldCreationResultErr> {
         if width < 1 || height < 2 {
@@ -82,6 +82,10 @@ impl<'a> Battlefield<'a> {
         self.height
     }
 
+    /// Shoot the given coordinate on the Battlefield. Ok results are
+    /// hits and misses. There are special enum values for hits that
+    /// destroy a ship or win the game. Shooting the same coordinate twice
+    /// or shooting out of bounds is considered an error.
     pub fn shoot(&mut self,
                  x: usize,
                  y: usize) -> ShotResult {
