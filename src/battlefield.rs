@@ -262,8 +262,15 @@ mod tests {
     }
 
     #[test]
+    fn assert_shooting_at_empty_cells_twice_is_an_error() {
+        let mut bf = Battlefield::new(3, 3);
+        bf.shoot(0, 0).expect("Must work");
+        assert_eq!(Err(ShotResultErr::AlreadyShot), bf.shoot(0, 0));
+    }
+
+    #[test]
     fn assert_shooting_at_filled_cells_is_a_hit() {
-        let ship = Ship::new(1, Horizontal);
+        let ship = Ship::new(2, Horizontal);
         let mut bf = Battlefield::new(3, 3);
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
