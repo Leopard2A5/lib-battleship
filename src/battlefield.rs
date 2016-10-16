@@ -8,7 +8,7 @@ use std::cmp;
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PlaceResultErr {
     OutOfBounds,
-    CellOccupied
+    CellOccupied,
 }
 
 /// The possible results of placing a ship on the battlefield.
@@ -19,19 +19,25 @@ pub enum ShotResultOk {
     Miss,
     Hit,
     ShipDestroyed,
-    WinningShot
+    WinningShot,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum ShotResultErr {
     OutOfBounds,
-    AlreadyShot
+    AlreadyShot,
 }
 
 /// The possible outcomes of shooting at a cell on the battlefield.
 pub type ShotResult = Result<ShotResultOk, ShotResultErr>;
 
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum BattlefieldCreationResultErr {
+    IllegalDimensions,
+}
+
 /// The battlefield, central point of every game of battleship.
+#[derive(Debug, PartialEq)]
 pub struct Battlefield<'a> {
     cells: Vec<Vec<Cell<'a>>>,
     width: usize,
@@ -41,11 +47,15 @@ pub struct Battlefield<'a> {
 impl<'a> Battlefield<'a> {
     /// Create a new Battlefield.
     pub fn new(width: usize,
-               height: usize) -> Battlefield<'a> {
-        Battlefield {
-            cells: Battlefield::init_cells(width, height),
-            width: width,
-            height: height,
+               height: usize) -> Result<Battlefield<'a>, BattlefieldCreationResultErr> {
+        if width < 1 || height < 2 {
+            Err(BattlefieldCreationResultErr::IllegalDimensions)
+        } else {
+            Ok(Battlefield {
+                cells: Battlefield::init_cells(width, height),
+                width: width,
+                height: height,
+            })
         }
     }
 
@@ -256,21 +266,29 @@ mod tests {
     use super::super::ship::Orientation::*;
     use super::ShotResultOk::*;
     use super::ShotResultErr;
+    use super::BattlefieldCreationResultErr::IllegalDimensions;
+
+    #[test]
+    fn assert_battlefield_constructor_checks_dimensions() {
+        assert_eq!(Err(IllegalDimensions), Battlefield::new(0, 0));
+        assert_eq!(Err(IllegalDimensions), Battlefield::new(0, 5));
+        assert_eq!(Err(IllegalDimensions), Battlefield::new(5, 0));
+    }
 
     #[test]
     fn assert_battlefield_returns_dimensions() {
-        let bf = Battlefield::new(1, 2);
+        let bf = Battlefield::new(1, 2).expect("Must work");
         assert_eq!(1, bf.width());
         assert_eq!(2, bf.height());
 
-        let bf = Battlefield::new(4, 7);
+        let bf = Battlefield::new(4, 7).expect("Must work");
         assert_eq!(4, bf.width());
         assert_eq!(7, bf.height());
     }
 
     #[test]
     fn assert_new_battlefield_has_correct_size() {
-        let bf = Battlefield::new(10, 10);
+        let bf = Battlefield::new(10, 10).expect("Must work");
         assert_eq!(bf.cells.len(), 10);
         for vec in bf.cells.iter() {
             assert_eq!(vec.len(), 10);
@@ -287,7 +305,7 @@ mod tests {
         let ship6 = Ship::new(3, Vertical);
         let ship7 = Ship::new(3, Vertical);
         let ship8 = Ship::new(3, Horizontal);
-        let mut bf = Battlefield::new(10, 10);
+        let mut bf = Battlefield::new(10, 10).expect("Must work");
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
         assert_eq!(Ok(()), bf.place_ship(&ship2, 5, 5));
@@ -306,7 +324,7 @@ mod tests {
         let ship1 = Ship::new(3, Horizontal);
         let ship2 = Ship::new(3, Horizontal);
         let ship3 = Ship::new(3, Vertical);
-        let mut bf = Battlefield::new(10, 10);
+        let mut bf = Battlefield::new(10, 10).expect("Must work");
 
         assert_eq!(Ok(()), bf.place_ship(&ship1, 0, 0));
         assert_eq!(Err(CellOccupied), bf.place_ship(&ship2, 2, 0));
@@ -315,21 +333,21 @@ mod tests {
 
     #[test]
     fn assert_shooting_out_of_bounds_is_an_error() {
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         assert_eq!(Err(ShotResultErr::OutOfBounds), bf.shoot(3, 0));
         assert_eq!(Err(ShotResultErr::OutOfBounds), bf.shoot(0, 3));
     }
 
     #[test]
     fn assert_shooting_at_empty_cells_is_a_miss() {
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         assert_eq!(Ok(Miss), bf.shoot(0, 0));
         assert_eq!(Ok(Miss), bf.shoot(1, 2));
     }
 
     #[test]
     fn assert_shooting_at_empty_cells_twice_is_an_error() {
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         bf.shoot(0, 0).expect("Must work");
         assert_eq!(Err(ShotResultErr::AlreadyShot), bf.shoot(0, 0));
     }
@@ -337,7 +355,7 @@ mod tests {
     #[test]
     fn assert_shooting_at_filled_cells_is_a_hit() {
         let ship = Ship::new(2, Horizontal);
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
         assert_eq!(Ok(Hit), bf.shoot(0, 0));
@@ -346,7 +364,7 @@ mod tests {
     #[test]
     fn assert_shooting_at_filled_cells_twice_is_an_error() {
         let ship = Ship::new(2, Horizontal);
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
         bf.shoot(0, 0).expect("must work");
@@ -357,7 +375,7 @@ mod tests {
     fn assert_destroying_a_ship_returns_ship_destroyed() {
         let ship1 = Ship::new(2, Horizontal);
         let ship2 = Ship::new(1, Horizontal);
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         bf.place_ship(&ship1, 0, 0).expect("Must work");
         // we need a second, intact ship, or we will get WinningShot instead of ShipDestroyed
         bf.place_ship(&ship2, 0, 1).expect("Must work");
@@ -369,7 +387,7 @@ mod tests {
     #[test]
     fn assert_destroying_last_ship_returns_winning_shot() {
         let ship = Ship::new(1, Horizontal);
-        let mut bf = Battlefield::new(3, 3);
+        let mut bf = Battlefield::new(3, 3).expect("Must work");
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
         assert_eq!(Ok(WinningShot), bf.shoot(0, 0));
