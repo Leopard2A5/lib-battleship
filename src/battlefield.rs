@@ -279,11 +279,33 @@ mod tests {
 
     #[test]
     fn assert_shooting_at_filled_cells_twice_is_an_error() {
-        let ship = Ship::new(1, Horizontal);
+        let ship = Ship::new(2, Horizontal);
         let mut bf = Battlefield::new(3, 3);
         bf.place_ship(&ship, 0, 0).expect("Must work");
 
         bf.shoot(0, 0).expect("must work");
         assert_eq!(Err(ShotResultErr::AlreadyShot), bf.shoot(0, 0));
+    }
+
+    #[test]
+    fn assert_destroying_a_ship_returns_ship_destroyed() {
+        let ship1 = Ship::new(2, Horizontal);
+        let ship2 = Ship::new(1, Horizontal);
+        let mut bf = Battlefield::new(3, 3);
+        bf.place_ship(&ship1, 0, 0).expect("Must work");
+        // we need a second, intact ship, or we will get WinningShot instead of ShipDestroyed
+        bf.place_ship(&ship2, 0, 1).expect("Must work");
+
+        bf.shoot(0, 0).expect("must work");
+        assert_eq!(Ok(ShipDestroyed), bf.shoot(1, 0));
+    }
+
+    #[test]
+    fn assert_destroying_last_ship_returns_winning_shot() {
+        let ship = Ship::new(1, Horizontal);
+        let mut bf = Battlefield::new(3, 3);
+        bf.place_ship(&ship, 0, 0).expect("Must work");
+
+        assert_eq!(Ok(WinningShot), bf.shoot(0, 0));
     }
 }
