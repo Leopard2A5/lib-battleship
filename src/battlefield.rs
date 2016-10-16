@@ -3,6 +3,7 @@ use super::ship::Ship;
 use super::ship::Orientation::*;
 use self::PlaceResultErr::*;
 use self::ShotResultOk::*;
+use std::cmp;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PlaceResultErr {
@@ -74,7 +75,8 @@ impl<'a> Battlefield<'a> {
     pub fn shoot(&mut self,
                  x: usize,
                  y: usize) -> ShotResult {
-        self.cells.get_mut(y)
+        let mut opt_ship = None;
+        let ret = self.cells.get_mut(y)
             .and_then(|row| row.get_mut(x))
             .ok_or(ShotResultErr::OutOfBounds)
             .and_then(|cell| {
@@ -83,9 +85,73 @@ impl<'a> Battlefield<'a> {
                 } else {
                     cell.shoot();
                     cell.get_ship()
-                        .map_or(Ok(Miss), |_| Ok(Hit))
+                        .map_or(Ok(Miss), |ship| {
+                            opt_ship = Some(ship);
+                            Ok(Hit)
+                        })
                 }
-            })
+            });
+
+        if let Some(ship) = opt_ship {
+            if self.is_ship_destroyed(ship, x, y) {
+                if self.all_ships_destroyed() {
+                    return Ok(WinningShot)
+                } else {
+                    return Ok(ShipDestroyed)
+                }
+            }
+            return Ok(Hit)
+        }
+
+        ret
+    }
+
+    fn is_ship_destroyed(&self,
+                         ship: &Ship,
+                         x: usize,
+                         y: usize) -> bool {
+        match ship.orientation() {
+            Horizontal => {
+                let min = cmp::max(0, (x as i8) - (ship.length() as i8)) as usize;
+                let max = cmp::min(self.width, x + ship.length());
+                for i in min..max {
+                    let cell = self.cells.get(y).unwrap().get(i).unwrap();
+                    if let Some(cur_ship) = cell.get_ship() {
+                        if ship == cur_ship && !cell.is_shot() {
+                            return false
+                        }
+                    }
+                }
+                return true
+            },
+            Vertical => {
+                let min = cmp::max(0, (y as i8) - (ship.length() as i8)) as usize;
+                let max = cmp::min(self.height, x + ship.length());
+                for i in min..max {
+                    let cell = self.cells.get(i).unwrap().get(x).unwrap();
+                    if let Some(cur_ship) = cell.get_ship() {
+                        if ship == cur_ship && !cell.is_shot() {
+                            return false
+                        }
+                    }
+                }
+                return true
+            }
+        }
+    }
+
+    fn all_ships_destroyed(&self) -> bool {
+        for row in self.cells.iter() {
+            for cell in row.iter() {
+                if let Some(_) = cell.get_ship() {
+                    if !cell.is_shot() {
+                        return false
+                    }
+                }
+            }
+        }
+
+        true
     }
 
     /// Place a ship on the battlefield. Results in an Ok if the ship could be
