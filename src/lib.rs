@@ -10,6 +10,7 @@
 pub mod battlefield;
 pub mod cell;
 pub mod ship;
+pub mod results;
 
 #[cfg(test)]
 mod tests {

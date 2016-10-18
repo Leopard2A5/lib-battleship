@@ -1,40 +1,13 @@
 use super::cell::Cell;
 use super::ship::Ship;
 use super::ship::Orientation::*;
-use self::PlaceResultErr::*;
-use self::ShotResultOk::*;
+use results::CommonError;
+use results::PlaceResultErr::*;
+use results::PlaceResult;
+use results::ShotResultOk::*;
+use results::ShotResultErr;
+use results::ShotResult;
 use std::cmp;
-
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub enum PlaceResultErr {
-    OutOfBounds,
-    CellOccupied,
-}
-
-/// The possible results of placing a ship on the battlefield.
-pub type PlaceResult = Result<(), PlaceResultErr>;
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum ShotResultOk {
-    Miss,
-    Hit,
-    ShipDestroyed,
-    WinningShot,
-}
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum ShotResultErr {
-    OutOfBounds,
-    AlreadyShot,
-}
-
-/// The possible outcomes of shooting at a cell on the battlefield.
-pub type ShotResult = Result<ShotResultOk, ShotResultErr>;
-
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub enum BattlefieldCreationResultErr {
-    IllegalDimensions,
-}
 
 /// The battlefield, central point of every game of battleship.
 #[derive(Debug, PartialEq)]
@@ -47,9 +20,9 @@ pub struct Battlefield<'a> {
 impl<'a> Battlefield<'a> {
     /// Create a new Battlefield. Width and height must be > 1.
     pub fn new(width: usize,
-               height: usize) -> Result<Battlefield<'a>, BattlefieldCreationResultErr> {
+               height: usize) -> Result<Battlefield<'a>, CommonError> {
         if width < 1 || height < 2 {
-            Err(BattlefieldCreationResultErr::IllegalDimensions)
+            Err(CommonError::IllegalDimensions)
         } else {
             Ok(Battlefield {
                 cells: Battlefield::init_cells(width, height),
@@ -265,12 +238,12 @@ impl<'a> Battlefield<'a> {
 #[cfg(test)]
 mod tests {
     use super::Battlefield;
-    use super::PlaceResultErr::*;
     use super::super::ship::Ship;
     use super::super::ship::Orientation::*;
-    use super::ShotResultOk::*;
-    use super::ShotResultErr;
-    use super::BattlefieldCreationResultErr::IllegalDimensions;
+    use results::PlaceResultErr::*;
+    use results::ShotResultOk::*;
+    use results::ShotResultErr;
+    use results::CommonError::IllegalDimensions;
 
     #[test]
     fn assert_battlefield_constructor_checks_dimensions() {
