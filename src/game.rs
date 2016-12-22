@@ -4,7 +4,8 @@ type Dimension = usize;
 
 #[derive(PartialEq, Debug)]
 pub struct Game {
-
+    width: Dimension,
+    height: Dimension,
 }
 
 impl Game {
@@ -15,8 +16,19 @@ impl Game {
         if width < 2 || height < 2 {
             Err(IllegalDimensions)
         } else {
-            Ok(Game {})
+            Ok(Game {
+                width: width,
+                height: height,
+            })
         }
+    }
+
+    pub fn width(&self) -> Dimension {
+        self.width
+    }
+
+    pub fn height(&self) -> Dimension {
+        self.height
     }
 }
 
@@ -32,4 +44,10 @@ mod test {
         assert_eq!(Err(IllegalDimensions), Game::new(5, 0));
     }
 
+    #[test]
+    fn game_should_return_dimensions() {
+        let game = Game::new(2, 3).unwrap();
+        assert_eq!(2, game.width());
+        assert_eq!(3, game.height());
+    }
 }
