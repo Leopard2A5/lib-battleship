@@ -26,9 +26,10 @@ mod test {
     use game::Game;
 
     #[test]
-    fn assert_game_constructor_checks_dimensions() {
+    fn game_constructor_should_check_dimensions() {
         assert_eq!(Err(IllegalDimensions), Game::new(0, 0));
         assert_eq!(Err(IllegalDimensions), Game::new(0, 5));
         assert_eq!(Err(IllegalDimensions), Game::new(5, 0));
     }
+
 }
