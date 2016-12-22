@@ -11,7 +11,7 @@ impl Game {
     pub fn new(
         width: Dimension,
         height: Dimension,
-    ) -> Result<Game, GameError> {
+    ) -> Result<Self, GameError> {
         if width < 2 || height < 2 {
             Err(IllegalDimensions)
         } else {
