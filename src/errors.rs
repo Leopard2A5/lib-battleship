@@ -6,4 +6,6 @@ pub enum GameError {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum PlaceError {
     AlreadyPlaced,
+    OutOfBounds,
+    UnknownShipTypeId,
 }
