@@ -2,3 +2,8 @@
 pub enum GameError {
     IllegalDimensions,
 }
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum PlaceError {
+
+}
