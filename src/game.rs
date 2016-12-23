@@ -1,8 +1,9 @@
 use errors::GameError::{self, IllegalDimensions};
-use errors::PlaceError;
+use errors::PlaceError::{self, AlreadyPlaced};
 use ship_type::ShipType;
 use orientation::Orientation;
 use player::Player;
+use std::collections::HashSet;
 
 pub type Dimension = usize;
 pub type ShipTypeId = usize;
@@ -12,6 +13,7 @@ pub struct Game {
     width: Dimension,
     height: Dimension,
     ship_types: Vec<ShipType>,
+    placed_ships: HashSet<(Player, ShipTypeId)>,
 }
 
 impl Game {
@@ -26,6 +28,7 @@ impl Game {
                 width: width,
                 height: height,
                 ship_types: Vec::new(),
+                placed_ships: HashSet::new(),
             })
         }
     }
@@ -61,13 +64,20 @@ impl Game {
         y: Dimension,
         orientation: Orientation,
     ) -> Result<(), PlaceError> {
-        Ok(())
+        let entry = (player, shipTypeId);
+        if self.placed_ships.contains(&entry) {
+            Err(AlreadyPlaced)
+        } else {
+            self.placed_ships.insert(entry);
+            Ok(())
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use errors::GameError::IllegalDimensions;
+    use errors::PlaceError::*;
     use player::Player::*;
     use orientation::Orientation::*;
     use game::Game;
@@ -108,5 +118,14 @@ mod test {
 
         assert_eq!(Ok(()), game.place_ship(P1, corvetteId, 0, 0, Horizontal));
         assert_eq!(Ok(()), game.place_ship(P2, corvetteId, 0, 0, Vertical));
+    }
+
+    #[test]
+    fn should_disallow_placing_ships_twice() {
+        let mut game = Game::new(3, 3).unwrap();
+        let corvetteId = game.add_ship_type("Corvette", 2);
+
+        assert_eq!(Ok(()), game.place_ship(P1, corvetteId, 0, 0, Horizontal));
+        assert_eq!(Err(AlreadyPlaced), game.place_ship(P1, corvetteId, 0, 1, Horizontal));
     }
 }
