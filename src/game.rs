@@ -1,8 +1,9 @@
 use errors::GameError;
-use errors::PlaceError::{self, AlreadyPlaced, UnknownShipTypeId, OutOfBounds};
+use errors::PlaceError;
+use errors::PlaceError::*;
 use ship_type::ShipType;
 use orientation::Orientation;
-use player::Player;
+use player::Player::{self, P1};
 use battlefield::Battlefield;
 use std::collections::HashSet;
 
@@ -67,10 +68,13 @@ impl Game {
     ) -> Result<(), PlaceError> {
         let ship_type = self.ship_types
             .get(ship_type_id)
-            .ok_or(UnknownShipTypeId)?;
+            .ok_or(UnknownShipTypeId)?.clone();
         self.assert_ship_not_yet_placed(player, ship_type_id)?;
         self.assert_ship_placement_in_bounds(&ship_type, x, y, orientation)?;
+        let affected_cell_coords = self.get_affected_cell_coords(&ship_type, x, y, orientation);
+        self.assert_cells_free(player, &affected_cell_coords)?;
 
+        self.do_place_ship(player, ship_type_id, &affected_cell_coords);
         self.placed_ships.insert((player, ship_type_id));
         Ok(())
     }
@@ -108,6 +112,70 @@ impl Game {
             Ok(())
         } else {
             Err(OutOfBounds)
+        }
+    }
+
+    fn get_affected_cell_coords(
+        &self,
+        ship_type: &ShipType,
+        x: Dimension,
+        y: Dimension,
+        orientation: Orientation,
+    ) -> Vec<(Dimension, Dimension)> {
+        match orientation {
+            Orientation::Horizontal => {
+                (0..ship_type.length())
+                    .map(|n| x + n)
+                    .map(|n| (n, y))
+                    .collect()
+            },
+            Orientation::Vertical => {
+                (0..ship_type.length())
+                    .map(|n| y + n)
+                    .map(|n| (x, n))
+                    .collect()
+            }
+        }
+    }
+
+    fn assert_cells_free(
+        &self,
+        player: Player,
+        cell_coords: &Vec<(Dimension, Dimension)>,
+    ) -> Result<(), PlaceError> {
+        let bf = if player == P1 {
+            self.battlefields.get(0).unwrap()
+        } else {
+            self.battlefields.get(1).unwrap()
+        };
+
+        for coords in cell_coords {
+            let (x, y) = *coords;
+            let cell = bf.get_cell(x, y).unwrap();
+            if cell.ship_type_id().is_some() {
+                return Err(CellOccupied);
+            }
+        }
+
+        Ok(())
+    }
+
+    fn do_place_ship(
+        &mut self,
+        player: Player,
+        ship_type_id: ShipTypeId,
+        affected_cell_coords: &Vec<(Dimension, Dimension)>
+    ) {
+        let bf = if player == P1 {
+            self.battlefields.get_mut(0).unwrap()
+        } else {
+            self.battlefields.get_mut(1).unwrap()
+        };
+
+        for coords in affected_cell_coords {
+            let (x, y) = *coords;
+            let cell = bf.get_mut_cell(x, y).unwrap();
+            cell.set_ship_type_id(ship_type_id);
         }
     }
 }

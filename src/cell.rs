@@ -26,7 +26,7 @@ impl Cell {
         self.ship_type_id
     }
 
-    pub fn ship(
+    pub fn set_ship_type_id(
         &mut self,
         ship_type_id: ShipTypeId
     ) {
@@ -43,6 +43,27 @@ mod tests {
         let cell = Cell::new();
         assert_eq!(None, cell.ship_type_id);
         assert_eq!(false, cell.shot);
+    }
+
+    #[test]
+    fn assert_ship_type_id_works() {
+        let mut cell = Cell {
+            ship_type_id: None,
+            shot: false,
+        };
+        assert_eq!(None, cell.ship_type_id());
+
+        cell.set_ship_type_id(7);
+        assert_eq!(Some(7), cell.ship_type_id());
+    }
+
+    #[test]
+    fn assert_shooting_works() {
+        let mut cell = Cell::new();
+        assert!(!cell.is_shot());
+
+        cell.shoot();
+        assert!(cell.is_shot());
     }
 
     #[test]

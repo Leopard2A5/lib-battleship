@@ -35,4 +35,35 @@ impl Battlefield {
         }
         ret
     }
+
+    pub fn get_cell(
+        &self,
+        x: Dimension,
+        y: Dimension,
+    ) -> Option<&Cell> {
+        self.cells.get(y)
+            .and_then(|row| row.get(x))
+    }
+
+    pub fn get_mut_cell(
+        &mut self,
+        x: Dimension,
+        y: Dimension,
+    ) -> Option<&mut Cell> {
+        self.cells.get_mut(y)
+            .and_then(|row| row.get_mut(x))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use battlefield::Battlefield;
+
+    #[test]
+    fn should_give_out_cell_references() {
+        let bf = Battlefield::new(2, 2).unwrap();
+
+        assert!(bf.get_cell(0, 0).is_some());
+        assert!(bf.get_cell(0, 2).is_none());
+    }
 }
