@@ -8,4 +8,5 @@ pub enum PlaceError {
     AlreadyPlaced,
     OutOfBounds,
     UnknownShipTypeId,
+    CellOccupied,
 }

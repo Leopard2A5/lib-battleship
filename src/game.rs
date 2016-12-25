@@ -176,4 +176,14 @@ mod test {
         assert_eq!(Err(OutOfBounds), game.place_ship(P1, corvette_id, 0, 2, Vertical));
         assert_eq!(Ok(()), game.place_ship(P1, corvette_id, 1, 0, Horizontal));
     }
+
+    #[test]
+    fn should_disallow_placing_ships_on_top_of_each_other() {
+        let mut game = Game::new(3, 3).unwrap();
+        let corvette_id = game.add_ship_type("Corvette", 2);
+        let frigate_id = game.add_ship_type("Frigate", 2);
+
+        assert_eq!(Ok(()), game.place_ship(P2, corvette_id, 0, 0, Horizontal));
+        assert_eq!(Err(CellOccupied), game.place_ship(P2, frigate_id, 1, 0, Vertical));
+    }
 }
