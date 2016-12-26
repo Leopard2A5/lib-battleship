@@ -12,6 +12,7 @@ use player::Player;
 use player::Player::*;
 use ship_type::ShipType;
 use std::collections::HashSet;
+use std::cmp::max;
 use super::Dimension;
 use super::ShipTypeId;
 
@@ -65,6 +66,8 @@ impl PreGame {
     ) -> Result<ShipTypeId, ShipTypeError> {
         if length == 0 {
             Err(IllegalShipLength)
+        } else if length > max(self.width(), self.height()) {
+            Err(ShipTooLongForBattlefield)
         } else {
             let typ = ShipType::new(name, length);
             self.ship_types.push(typ);
@@ -243,6 +246,14 @@ mod test {
         let mut game = PreGame::new(3, 3).unwrap();
 
         assert_eq!(Err(IllegalShipLength), game.add_ship_type("Jetski", 0));
+    }
+
+    #[test]
+    fn should_disallow_too_long_ship_types() {
+        let mut game = PreGame::new(3, 3).unwrap();
+
+        game.add_ship_type("Submarine", 1).unwrap();
+        assert_eq!(Err(ShipTooLongForBattlefield), game.add_ship_type("Battleship", 4));
     }
 
     #[test]

@@ -6,6 +6,7 @@ pub enum GameError {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ShipTypeError {
     IllegalShipLength,
+    ShipTooLongForBattlefield,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
