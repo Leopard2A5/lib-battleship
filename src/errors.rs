@@ -14,4 +14,5 @@ pub enum PlaceError {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ShootError {
     NoShipsPlaced,
+    NotAllShipsPlaced,
 }

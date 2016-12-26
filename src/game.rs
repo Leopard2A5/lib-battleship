@@ -189,6 +189,8 @@ impl Game {
     ) -> Result<(), ShootError> {
         if self.placed_ships.len() == 0 {
             Err(NoShipsPlaced)
+        } else if self.placed_ships.len() != (2 * self.ship_types.len()) {
+            Err(NotAllShipsPlaced)
         } else {
             Ok(())
         }
@@ -275,5 +277,18 @@ mod test {
     fn should_disallow_shooting_before_any_ships_placed() {
         let mut game = Game::new(2, 2).unwrap();
         assert_eq!(Err(NoShipsPlaced), game.shoot(P1, 0, 0));
+    }
+
+    #[test]
+    fn should_disallow_shooting_before_all_ships_placed() {
+        let mut game = Game::new(2, 2).unwrap();
+        let submarine_id = game.add_ship_type("Submarine", 1);
+        let corvette_id = game.add_ship_type("Corvette", 2);
+
+        game.place_ship(P1, submarine_id, 0, 0, Horizontal).unwrap();
+        game.place_ship(P2, submarine_id, 0, 0, Horizontal).unwrap();
+        game.place_ship(P1, corvette_id, 0, 1, Horizontal).unwrap();
+
+        assert_eq!(Err(NotAllShipsPlaced),  game.shoot(P1, 1, 1));
     }
 }
