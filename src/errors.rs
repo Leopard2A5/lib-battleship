@@ -22,3 +22,8 @@ pub enum GameStartError {
     NoShipsPlaced,
     NotAllShipsPlaced,
 }
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum ShootError {
+    OutOfBounds,
+}
