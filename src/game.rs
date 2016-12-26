@@ -41,6 +41,7 @@ impl Game {
         x: Dimension,
         y: Dimension,
     ) -> Result<(), ShootError> {
+        self.current_player = self.current_player.next();
         Ok(())
     }
 }
