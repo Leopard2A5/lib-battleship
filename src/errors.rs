@@ -10,3 +10,8 @@ pub enum PlaceError {
     UnknownShipTypeId,
     CellOccupied,
 }
+
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum ShootError {
+    NoShipsPlaced,
+}

@@ -1,6 +1,8 @@
 use errors::GameError;
 use errors::PlaceError;
 use errors::PlaceError::*;
+use errors::ShootError;
+use errors::ShootError::*;
 use ship_type::ShipType;
 use orientation::Orientation;
 use player::Player::{self, P1};
@@ -178,12 +180,26 @@ impl Game {
             cell.set_ship_type_id(ship_type_id);
         }
     }
+
+    pub fn shoot(
+        &mut self,
+        target_player: Player,
+        x: Dimension,
+        y: Dimension,
+    ) -> Result<(), ShootError> {
+        if self.placed_ships.len() == 0 {
+            Err(NoShipsPlaced)
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[cfg(test)]
 mod test {
     use errors::GameError::IllegalDimensions;
     use errors::PlaceError::*;
+    use errors::ShootError::*;
     use player::Player::*;
     use orientation::Orientation::*;
     use game::Game;
@@ -253,5 +269,11 @@ mod test {
 
         assert_eq!(Ok(()), game.place_ship(P2, corvette_id, 0, 0, Horizontal));
         assert_eq!(Err(CellOccupied), game.place_ship(P2, frigate_id, 1, 0, Vertical));
+    }
+
+    #[test]
+    fn should_disallow_shooting_before_any_ships_placed() {
+        let mut game = Game::new(2, 2).unwrap();
+        assert_eq!(Err(NoShipsPlaced), game.shoot(P1, 0, 0));
     }
 }
