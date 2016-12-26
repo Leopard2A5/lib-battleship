@@ -7,6 +7,7 @@ use super::Dimension;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ShootOk {
+    Hit,
     Miss,
 }
 
@@ -54,9 +55,12 @@ impl Game {
         let cell = self.battlefields.get_mut(bf_num).unwrap()
             .get_mut_cell(x, y)
             .ok_or(OutOfBounds)?;
+        cell.shoot();
 
         self.current_player = self.current_player.next();
-        Ok(ShootOk::Miss)
+
+        Ok(cell.ship_type_id()
+            .map_or(ShootOk::Miss, |_| ShootOk::Hit))
     }
 }
 
@@ -117,6 +121,13 @@ mod test {
 
         assert_eq!(Ok(Miss), game.shoot(P2, 0, 1));
         assert_eq!(Ok(Miss), game.shoot(P1, 1, 1));
+    }
+
+    #[test]
+    fn assert_shooting_at_filled_cells_is_a_hit() {
+        let mut game = build_test_game();
+
+        assert_eq!(Ok(Hit), game.shoot(P2, 0, 0));
     }
 
     fn build_test_game() -> Game {
