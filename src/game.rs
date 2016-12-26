@@ -5,6 +5,11 @@ use errors::ShootError;
 use errors::ShootError::*;
 use super::Dimension;
 
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum ShootOk {
+    Miss,
+}
+
 #[derive(PartialEq, Debug)]
 pub struct Game {
     ship_types: Vec<ShipType>,
@@ -41,14 +46,17 @@ impl Game {
         target_player: Player,
         x: Dimension,
         y: Dimension,
-    ) -> Result<(), ShootError> {
+    ) -> Result<ShootOk, ShootError> {
+        if self.current_player == target_player {
+            return Err(NotThisPlayersTurn);
+        }
         let bf_num = if target_player == P1 {0} else {1};
         let cell = self.battlefields.get_mut(bf_num).unwrap()
             .get_mut_cell(x, y)
             .ok_or(OutOfBounds)?;
 
         self.current_player = self.current_player.next();
-        Ok(())
+        Ok(ShootOk::Miss)
     }
 }
 
@@ -61,6 +69,7 @@ mod test {
     use player::Player::*;
     use pregame::PreGame;
     use ship_type::ShipType;
+    use game::ShootOk::*;
 
     #[test]
     fn should_return_dimensions() {
@@ -89,6 +98,7 @@ mod test {
 
         assert_eq!(Err(NotThisPlayersTurn), game.shoot(P1, 0, 0));
         game.shoot(P2, 0, 0).unwrap();
+        assert_eq!(Err(NotThisPlayersTurn), game.shoot(P2, 0, 0));
         game.shoot(P1, 0, 0).unwrap();
     }
 
@@ -99,6 +109,14 @@ mod test {
         assert_eq!(Err(OutOfBounds), game.shoot(P2, 3, 0));
         assert_eq!(Err(OutOfBounds), game.shoot(P2, 0, 3));
         game.shoot(P2, 0, 0).unwrap();
+    }
+
+    #[test]
+    fn assert_shooting_at_empty_cells_is_a_miss() {
+        let mut game = build_test_game();
+
+        assert_eq!(Ok(Miss), game.shoot(P2, 0, 1));
+        assert_eq!(Ok(Miss), game.shoot(P1, 1, 1));
     }
 
     fn build_test_game() -> Game {
