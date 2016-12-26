@@ -12,7 +12,7 @@ pub enum PlaceError {
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
-pub enum ShootError {
+pub enum GameStartError {
     NoShipsPlaced,
     NotAllShipsPlaced,
 }

@@ -1,6 +1,6 @@
 use errors::GameError::{self, IllegalDimensions};
 use cell::Cell;
-use game::Dimension;
+use super::Dimension;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Battlefield {
@@ -36,6 +36,14 @@ impl Battlefield {
         ret
     }
 
+    pub fn width(&self) -> Dimension {
+        self.cells.first().unwrap().len()
+    }
+
+    pub fn height(&self) -> Dimension {
+        self.cells.len()
+    }
+
     pub fn get_cell(
         &self,
         x: Dimension,
@@ -65,5 +73,13 @@ mod test {
 
         assert!(bf.get_cell(0, 0).is_some());
         assert!(bf.get_cell(0, 2).is_none());
+    }
+
+    #[test]
+    fn should_return_width() {
+        let bf = Battlefield::new(2, 3).unwrap();
+
+        assert_eq!(2, bf.width());
+        assert_eq!(3, bf.height());
     }
 }

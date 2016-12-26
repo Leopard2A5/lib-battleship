@@ -1,4 +1,4 @@
-use game::ShipTypeId;
+use super::ShipTypeId;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Cell {

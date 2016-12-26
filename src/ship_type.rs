@@ -1,4 +1,4 @@
-use game::Dimension;
+use super::Dimension;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct ShipType {
