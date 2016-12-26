@@ -1,6 +1,6 @@
 use ship_type::ShipType;
 use battlefield::Battlefield;
-use player::Player;
+use player::Player::{self, P1};
 use errors::ShootError;
 use super::Dimension;
 
@@ -8,6 +8,7 @@ use super::Dimension;
 pub struct Game {
     ship_types: Vec<ShipType>,
     battlefields: Vec<Battlefield>,
+    current_player: Player,
 }
 
 impl Game {
@@ -18,6 +19,7 @@ impl Game {
         Game {
             ship_types: ship_types,
             battlefields: battlefields,
+            current_player: P1,
         }
     }
 
@@ -27,6 +29,10 @@ impl Game {
 
     pub fn height(&self) -> Dimension {
         self.battlefields.first().unwrap().height()
+    }
+
+    pub fn current_player(&self) -> Player {
+        self.current_player
     }
 
     pub fn shoot(
@@ -59,6 +65,24 @@ mod test {
         let game = Game::new(ship_types, battlefields);
         assert_eq!(2, game.width());
         assert_eq!(3, game.height());
+    }
+
+    #[test]
+    fn should_tell_whos_turn_it_is() {
+        let mut game = build_test_game();
+
+        assert_eq!(P1, game.current_player());
+        game.shoot(P2, 0, 0).unwrap();
+        assert_eq!(P2, game.current_player());
+    }
+
+    #[test]
+    fn should_respect_order_of_play() {
+        let mut game = build_test_game();
+
+        assert_eq!(Err(NotThisPlayersTurn), game.shoot(P1, 0, 0));
+        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P1, 0, 0).unwrap();
     }
 
     #[test]

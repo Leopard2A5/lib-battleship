@@ -25,5 +25,6 @@ pub enum GameStartError {
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ShootError {
+    NotThisPlayersTurn,
     OutOfBounds,
 }
