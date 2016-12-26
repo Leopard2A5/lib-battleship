@@ -1,17 +1,17 @@
+use battlefield::Battlefield;
 use errors::GameError;
 use errors::GameStartError;
 use errors::GameStartError::*;
 use errors::PlaceError;
 use errors::PlaceError::*;
 use game::Game;
-use battlefield::Battlefield;
+use orientation::Orientation;
+use player::Player;
+use player::Player::*;
+use ship_type::ShipType;
+use std::collections::HashSet;
 use super::Dimension;
 use super::ShipTypeId;
-use std::collections::HashSet;
-use ship_type::ShipType;
-use player::Player;
-use orientation::Orientation;
-use player::Player::*;
 
 #[derive(PartialEq, Debug)]
 pub struct PreGame {
