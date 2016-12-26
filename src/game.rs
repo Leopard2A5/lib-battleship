@@ -2,6 +2,7 @@ use ship_type::ShipType;
 use battlefield::Battlefield;
 use player::Player::{self, P1};
 use errors::ShootError;
+use errors::ShootError::*;
 use super::Dimension;
 
 #[derive(PartialEq, Debug)]
@@ -41,6 +42,11 @@ impl Game {
         x: Dimension,
         y: Dimension,
     ) -> Result<(), ShootError> {
+        let bf_num = if target_player == P1 {0} else {1};
+        let cell = self.battlefields.get_mut(bf_num).unwrap()
+            .get_mut_cell(x, y)
+            .ok_or(OutOfBounds)?;
+
         self.current_player = self.current_player.next();
         Ok(())
     }
