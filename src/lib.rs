@@ -3,6 +3,7 @@ pub mod game;
 pub mod results;
 pub mod player;
 pub mod orientation;
+pub mod cell_status;
 
 mod battlefield;
 mod cell;

@@ -83,6 +83,7 @@ mod test {
     use player::Player::*;
     use pregame::PreGame;
     use ship_type::ShipType;
+    use cell_status::CellStatus;
 
     #[test]
     fn should_return_dimensions() {
@@ -171,6 +172,31 @@ mod test {
         game.shoot(P2, 0, 0).unwrap();
         game.shoot(P2, 1, 0).unwrap();
         assert_eq!(Ok(WinningShot), game.shoot(P2, 0, 1));
+    }
+
+    #[test]
+    fn can_get_cell_status_for_owner() {
+        let mut game = build_test_game();
+
+        assert_eq!(CellStatus::Empty, game.get_cell(P2, 2, 2));
+        assert_eq!(CellStatus::Ship, game.get_cell(P2, 0, 0));
+        game.shoot(P2, 0, 0);
+        assert_eq!(CellStatus::Hit, game.get_cell(P2, 0, 0));
+    }
+
+    #[test]
+    fn owner_cell_status_doesnt_show_misses() {
+
+    }
+
+    #[test]
+    fn can_get_cell_status_for_opponent() {
+
+    }
+
+    #[test]
+    fn opponent_cell_status_doesnt_show_ships() {
+
     }
 
     fn build_test_game() -> Game {
