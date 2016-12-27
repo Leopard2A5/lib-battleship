@@ -1,6 +1,6 @@
 pub mod pregame;
 pub mod game;
-pub mod errors;
+pub mod results;
 pub mod player;
 pub mod orientation;
 

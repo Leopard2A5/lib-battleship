@@ -1,18 +1,12 @@
 use battlefield::Battlefield;
-use errors::ShootError;
-use errors::ShootError::*;
+use results::ShootError;
+use results::ShootError::*;
+use results::ShootOk;
+use results::ShootOk::*;
 use player::Player::{self, P1};
 use ship_status::ShipStatus;
 use ship_type::ShipType;
 use super::Dimension;
-
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub enum ShootOk {
-    Hit,
-    Miss,
-    Destroyed,
-    WinningShot,
-}
 
 #[derive(PartialEq, Debug)]
 pub struct Game {
@@ -66,15 +60,15 @@ impl Game {
             let new_health = self.ship_status.hit(target_player, ship_type_id);
             let sum_health = self.ship_status.get_sum_health(target_player);
             if sum_health <= 0 {
-                Ok(ShootOk::WinningShot)
+                Ok(WinningShot)
             } else if new_health <= 0 {
-                Ok(ShootOk::Destroyed)
+                Ok(Destroyed)
             } else {
-                Ok(ShootOk::Hit)
+                Ok(Hit)
             }
         } else {
             self.current_player = self.current_player.next();
-            Ok(ShootOk::Miss)
+            Ok(Miss)
         }
     }
 }
@@ -82,13 +76,13 @@ impl Game {
 #[cfg(test)]
 mod test {
     use battlefield::Battlefield;
-    use errors::ShootError::*;
+    use results::ShootError::*;
+    use results::ShootOk::*;
     use game::Game;
     use orientation::Orientation::*;
     use player::Player::*;
     use pregame::PreGame;
     use ship_type::ShipType;
-    use game::ShootOk::*;
 
     #[test]
     fn should_return_dimensions() {

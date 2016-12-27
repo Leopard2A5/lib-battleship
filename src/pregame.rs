@@ -1,11 +1,11 @@
 use battlefield::Battlefield;
-use errors::GameError;
-use errors::GameStartError;
-use errors::GameStartError::*;
-use errors::PlaceError;
-use errors::PlaceError::*;
-use errors::ShipTypeError;
-use errors::ShipTypeError::*;
+use results::GameError;
+use results::GameStartError;
+use results::GameStartError::*;
+use results::PlaceError;
+use results::PlaceError::*;
+use results::ShipTypeError;
+use results::ShipTypeError::*;
 use game::Game;
 use orientation::Orientation;
 use player::Player;
@@ -204,11 +204,11 @@ impl PreGame {
 #[cfg(test)]
 mod test {
     use pregame::PreGame;
-    use errors::GameError::IllegalDimensions;
+    use results::GameError::IllegalDimensions;
     use player::Player::*;
-    use errors::PlaceError::*;
-    use errors::GameStartError::*;
-    use errors::ShipTypeError::*;
+    use results::PlaceError::*;
+    use results::GameStartError::*;
+    use results::ShipTypeError::*;
     use orientation::Orientation::*;
 
     #[test]

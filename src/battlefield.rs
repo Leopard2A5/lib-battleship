@@ -1,4 +1,4 @@
-use errors::GameError::{self, IllegalDimensions};
+use results::GameError::{self, IllegalDimensions};
 use cell::Cell;
 use super::Dimension;
 
