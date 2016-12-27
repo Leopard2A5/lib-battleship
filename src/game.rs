@@ -9,6 +9,7 @@ use super::Dimension;
 pub enum ShootOk {
     Hit,
     Miss,
+    Destroyed,
 }
 
 #[derive(PartialEq, Debug)]
@@ -107,7 +108,7 @@ mod test {
     }
 
     #[test]
-    fn assert_shooting_out_of_bounds_is_an_error() {
+    fn shooting_out_of_bounds_is_an_error() {
         let mut game = build_test_game();
 
         assert_eq!(Err(OutOfBounds), game.shoot(P2, 3, 0));
@@ -116,25 +117,37 @@ mod test {
     }
 
     #[test]
-    fn assert_shooting_at_empty_cells_is_a_miss() {
+    fn shooting_at_empty_cells_is_a_miss() {
         let mut game = build_test_game();
 
-        assert_eq!(Ok(Miss), game.shoot(P2, 0, 1));
+        assert_eq!(Ok(Miss), game.shoot(P2, 1, 1));
         assert_eq!(Ok(Miss), game.shoot(P1, 1, 1));
     }
 
     #[test]
-    fn assert_shooting_at_filled_cells_is_a_hit() {
+    fn shooting_at_filled_cells_is_a_hit() {
         let mut game = build_test_game();
 
         assert_eq!(Ok(Hit), game.shoot(P2, 0, 0));
     }
 
+    #[test]
+    fn destroying_a_ship_returns_ship_destroyed() {
+        let mut game = build_test_game();
+
+        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P1, 0, 0).unwrap();
+        assert_eq!(Ok(Destroyed), game.shoot(P2, 1, 0));
+    }
+
     fn build_test_game() -> Game {
         let mut pregame = PreGame::new(3, 3).unwrap();
         let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
+        let submarine_id = pregame.add_ship_type("Submarine", 1).unwrap();
         pregame.place_ship(P1, corvette_id, 0, 0 , Horizontal).unwrap();
         pregame.place_ship(P2, corvette_id, 0, 0 , Horizontal).unwrap();
+        pregame.place_ship(P1, submarine_id, 0, 1, Horizontal).unwrap();
+        pregame.place_ship(P2, submarine_id, 0, 1, Horizontal).unwrap();
 
         pregame.start().unwrap()
     }
