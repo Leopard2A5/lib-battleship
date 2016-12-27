@@ -1,8 +1,9 @@
-use ship_type::ShipType;
 use battlefield::Battlefield;
-use player::Player::{self, P1};
 use errors::ShootError;
 use errors::ShootError::*;
+use player::Player::{self, P1};
+use ship_status::ShipStatus;
+use ship_type::ShipType;
 use super::Dimension;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
@@ -17,6 +18,7 @@ pub struct Game {
     ship_types: Vec<ShipType>,
     battlefields: Vec<Battlefield>,
     current_player: Player,
+    ship_status: ShipStatus,
 }
 
 impl Game {
@@ -25,9 +27,10 @@ impl Game {
         battlefields: Vec<Battlefield>,
     ) -> Self {
         Game {
-            ship_types: ship_types,
+            ship_types: ship_types.clone(),
             battlefields: battlefields,
             current_player: P1,
+            ship_status: ShipStatus::new(&ship_types),
         }
     }
 
@@ -59,9 +62,16 @@ impl Game {
         cell.shoot();
 
         self.current_player = self.current_player.next();
-
-        Ok(cell.ship_type_id()
-            .map_or(ShootOk::Miss, |_| ShootOk::Hit))
+        if let Some(ship_type_id) = cell.ship_type_id() {
+            let new_health = self.ship_status.hit(target_player, ship_type_id);
+            if new_health <= 0 {
+                Ok(ShootOk::Destroyed)
+            } else {
+                Ok(ShootOk::Hit)
+            }
+        } else {
+            Ok(ShootOk::Miss)
+        }
     }
 }
 
