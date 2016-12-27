@@ -21,18 +21,6 @@ impl ShipStatus {
         }
     }
 
-    pub fn get_health(
-        &self,
-        player: Player,
-        ship_type_id: ShipTypeId,
-    ) -> Dimension {
-        if player == P1 {
-            *self.status_p1.get(ship_type_id).unwrap()
-        } else {
-            *self.status_p2.get(ship_type_id).unwrap()
-        }
-    }
-
     pub fn get_sum_health(
         &self,
         player: Player,
@@ -68,26 +56,6 @@ mod test {
     use ship_type::ShipType;
     use ship_status::ShipStatus;
     use player::Player::*;
-
-    #[test]
-    fn should_init_with_length() {
-        let types = vec!(ShipType::new("Corvette", 2));
-        let status = ShipStatus::new(&types);
-
-        assert_eq!(2, status.get_health(P1, 0));
-        assert_eq!(2, status.get_health(P2, 0));
-    }
-
-    #[test]
-    fn should_reduce_health() {
-        let types = vec!(ShipType::new("Corvette", 2));
-        let mut status = ShipStatus::new(&types);
-
-        assert_eq!(1, status.hit(P1, 0));
-        assert_eq!(1, status.get_health(P1, 0));
-        assert_eq!(1, status.hit(P2, 0));
-        assert_eq!(1, status.get_health(P2, 0));
-    }
 
     #[test]
     fn should_sum_player_health() {
