@@ -62,7 +62,6 @@ impl Game {
             .ok_or(OutOfBounds)?;
         cell.shoot();
 
-        self.current_player = self.current_player.next();
         if let Some(ship_type_id) = cell.ship_type_id() {
             let new_health = self.ship_status.hit(target_player, ship_type_id);
             let sum_health = self.ship_status.get_sum_health(target_player);
@@ -74,6 +73,7 @@ impl Game {
                 Ok(ShootOk::Hit)
             }
         } else {
+            self.current_player = self.current_player.next();
             Ok(ShootOk::Miss)
         }
     }
@@ -107,7 +107,7 @@ mod test {
         let mut game = build_test_game();
 
         assert_eq!(P1, game.current_player());
-        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P2, 2, 2).unwrap();
         assert_eq!(P2, game.current_player());
     }
 
@@ -116,9 +116,26 @@ mod test {
         let mut game = build_test_game();
 
         assert_eq!(Err(NotThisPlayersTurn), game.shoot(P1, 0, 0));
-        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P2, 2, 2).unwrap();
         assert_eq!(Err(NotThisPlayersTurn), game.shoot(P2, 0, 0));
         game.shoot(P1, 0, 0).unwrap();
+    }
+
+    #[test]
+    fn a_hit_lets_you_shoot_again() {
+        let mut game = build_test_game();
+
+        // single hit
+        assert_eq!(P1, game.current_player());
+        game.shoot(P2, 0, 0).unwrap();
+        assert_eq!(P1, game.current_player());
+        game.shoot(P2, 2, 2).unwrap();
+        assert_eq!(P2, game.current_player());
+
+        // destroyed ship
+        game.shoot(P1, 2, 2).unwrap();
+        game.shoot(P2, 1, 0).unwrap();
+        assert_eq!(P1, game.current_player());
     }
 
     #[test]
@@ -150,7 +167,6 @@ mod test {
         let mut game = build_test_game();
 
         game.shoot(P2, 0, 0).unwrap();
-        game.shoot(P1, 0, 0).unwrap();
         assert_eq!(Ok(Destroyed), game.shoot(P2, 1, 0));
     }
 
@@ -159,9 +175,7 @@ mod test {
         let mut game = build_test_game();
 
         game.shoot(P2, 0, 0).unwrap();
-        game.shoot(P1, 0, 0).unwrap();
         game.shoot(P2, 1, 0).unwrap();
-        game.shoot(P1, 2, 2).unwrap();
         assert_eq!(Ok(WinningShot), game.shoot(P2, 0, 1));
     }
 
