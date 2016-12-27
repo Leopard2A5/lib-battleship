@@ -10,9 +10,3 @@ pub mod cell;
 
 pub type Dimension = usize;
 pub type ShipTypeId = usize;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {}
-}
