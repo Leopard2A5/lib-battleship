@@ -11,6 +11,7 @@ pub enum ShootOk {
     Hit,
     Miss,
     Destroyed,
+    WinningShot,
 }
 
 #[derive(PartialEq, Debug)]
@@ -64,7 +65,10 @@ impl Game {
         self.current_player = self.current_player.next();
         if let Some(ship_type_id) = cell.ship_type_id() {
             let new_health = self.ship_status.hit(target_player, ship_type_id);
-            if new_health <= 0 {
+            let sum_health = self.ship_status.get_sum_health(target_player);
+            if sum_health <= 0 {
+                Ok(ShootOk::WinningShot)
+            } else if new_health <= 0 {
                 Ok(ShootOk::Destroyed)
             } else {
                 Ok(ShootOk::Hit)
@@ -148,6 +152,17 @@ mod test {
         game.shoot(P2, 0, 0).unwrap();
         game.shoot(P1, 0, 0).unwrap();
         assert_eq!(Ok(Destroyed), game.shoot(P2, 1, 0));
+    }
+
+    #[test]
+    fn destroying_last_ship_wins_game() {
+        let mut game = build_test_game();
+
+        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P1, 0, 0).unwrap();
+        game.shoot(P2, 1, 0).unwrap();
+        game.shoot(P1, 2, 2).unwrap();
+        assert_eq!(Ok(WinningShot), game.shoot(P2, 0, 1));
     }
 
     fn build_test_game() -> Game {

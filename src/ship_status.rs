@@ -3,6 +3,7 @@ use player::Player::{self, P1};
 use super::Dimension;
 use super::ShipTypeId;
 use std::mem;
+use std::cmp;
 
 #[derive(PartialEq, Debug)]
 pub struct ShipStatus {
@@ -29,6 +30,19 @@ impl ShipStatus {
             *self.status_p1.get(ship_type_id).unwrap()
         } else {
             *self.status_p2.get(ship_type_id).unwrap()
+        }
+    }
+
+    pub fn get_sum_health(
+        &self,
+        player: Player,
+    ) -> Dimension {
+        if player == P1 {
+            let sum = self.status_p1.iter().fold(0, |acc, &x| acc + x);
+            cmp::max(0, sum)
+        } else {
+            let sum = self.status_p2.iter().fold(0, |acc, &x| acc + x);
+            cmp::max(0, sum)
         }
     }
 
@@ -73,5 +87,19 @@ mod test {
         assert_eq!(1, status.get_health(P1, 0));
         assert_eq!(1, status.hit(P2, 0));
         assert_eq!(1, status.get_health(P2, 0));
+    }
+
+    #[test]
+    fn should_sum_player_health() {
+        let types = vec!(ShipType::new("Corvette", 2));
+        let mut status = ShipStatus::new(&types);
+
+        assert_eq!(2, status.get_sum_health(P1));
+        assert_eq!(1, status.hit(P1, 0));
+        assert_eq!(1, status.get_sum_health(P1));
+
+        assert_eq!(2, status.get_sum_health(P2));
+        assert_eq!(1, status.hit(P2, 0));
+        assert_eq!(1, status.get_sum_health(P2));
     }
 }
