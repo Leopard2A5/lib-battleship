@@ -1,3 +1,4 @@
+/// Enum for the players.
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum Player {
     P1,
@@ -5,6 +6,7 @@ pub enum Player {
 }
 
 impl Player {
+    /// Returns the next player. `P1` -> `P2` -> `P1` -> etc.
     pub fn next(&self) -> Player {
         match *self {
             Player::P1 => {
