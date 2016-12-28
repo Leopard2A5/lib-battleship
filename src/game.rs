@@ -1,3 +1,5 @@
+//! Implementations for a started game of battleship.
+
 use battlefield::Battlefield;
 use battlefield::CellStatus;
 use results::ShootError;

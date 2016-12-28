@@ -1,3 +1,5 @@
+//! Common types, functions, etc.
+
 pub use self::orientation::Orientation;
 pub use self::player::Player;
 

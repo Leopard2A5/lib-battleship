@@ -9,5 +9,8 @@ pub mod common;
 
 mod battlefield;
 
+/// Dimension type for battleship.
 pub type Dimension = usize;
+
+/// The type of ship type IDs.
 pub type ShipTypeId = usize;

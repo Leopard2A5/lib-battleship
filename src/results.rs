@@ -1,3 +1,5 @@
+//! Result types for all operations that can fail.
+
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum GameError {
     IllegalDimensions,
