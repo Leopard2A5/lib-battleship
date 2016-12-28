@@ -1,4 +1,4 @@
-use super::Dimension;
+use ::Dimension;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct ShipType {
@@ -28,7 +28,7 @@ impl ShipType {
 
 #[cfg(test)]
 mod test {
-    use ship_type::ShipType;
+    use super::ShipType;
 
     #[test]
     fn constructor_should_work() {

@@ -19,7 +19,7 @@ impl Player {
 
 #[cfg(test)]
 mod test {
-    use player::Player::*;
+    use super::Player::*;
 
     #[test]
     fn should_alternate_between_players() {

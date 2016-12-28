@@ -12,16 +12,17 @@ use results::PlaceError::*;
 use results::ShipTypeError;
 use results::ShipTypeError::*;
 use game::Game;
-use orientation::Orientation;
-use player::Player;
-use player::Player::*;
-use ship_type::ShipType;
+use common::Orientation;
+use common::Player;
+use common::Player::*;
+use battlefield::ShipType;
 use std::collections::HashSet;
 use std::cmp::max;
 use super::Dimension;
 use super::ShipTypeId;
 
 #[derive(PartialEq, Debug)]
+/// foo
 pub struct PreGame {
     width: Dimension,
     height: Dimension,
@@ -30,6 +31,7 @@ pub struct PreGame {
     battlefields: Vec<Battlefield>,
 }
 
+/// bar
 impl PreGame {
     pub fn new(
         width: Dimension,
@@ -210,11 +212,11 @@ impl PreGame {
 mod test {
     use pregame::PreGame;
     use results::GameError::IllegalDimensions;
-    use player::Player::*;
+    use common::Player::*;
     use results::PlaceError::*;
     use results::GameStartError::*;
     use results::ShipTypeError::*;
-    use orientation::Orientation::*;
+    use common::Orientation::*;
 
     #[test]
     fn constructor_should_check_dimensions() {

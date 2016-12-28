@@ -1,6 +1,6 @@
 use results::GameError::{self, IllegalDimensions};
-use cell::Cell;
-use super::Dimension;
+use super::Cell;
+use ::Dimension;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Battlefield {
@@ -65,7 +65,7 @@ impl Battlefield {
 
 #[cfg(test)]
 mod test {
-    use battlefield::Battlefield;
+    use super::Battlefield;
 
     #[test]
     fn should_give_out_cell_references() {

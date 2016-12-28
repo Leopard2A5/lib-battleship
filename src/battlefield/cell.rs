@@ -1,4 +1,4 @@
-use super::ShipTypeId;
+use ::ShipTypeId;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Cell {
@@ -36,7 +36,7 @@ impl Cell {
 
 #[cfg(test)]
 mod tests {
-    use cell::Cell;
+    use super::Cell;
 
     #[test]
     fn assert_new_cells_are_empty_and_not_shot() {

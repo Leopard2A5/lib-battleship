@@ -1,12 +1,12 @@
 use battlefield::Battlefield;
-use cell_status::CellStatus;
+use battlefield::CellStatus;
 use results::ShootError;
 use results::ShootError::*;
 use results::ShootOk;
 use results::ShootOk::*;
-use player::Player::{self, P1};
-use ship_status::ShipStatus;
-use ship_type::ShipType;
+use common::Player::{self, P1};
+use battlefield::ShipStatus;
+use battlefield::ShipType;
 use super::Dimension;
 
 #[derive(PartialEq, Debug)]
@@ -131,12 +131,12 @@ mod test {
     use battlefield::Battlefield;
     use results::ShootError::*;
     use results::ShootOk::*;
-    use game::Game;
-    use orientation::Orientation::*;
-    use player::Player::*;
+    use super::Game;
+    use common::Orientation::*;
+    use common::Player::*;
     use pregame::PreGame;
-    use ship_type::ShipType;
-    use cell_status::CellStatus;
+    use battlefield::ShipType;
+    use battlefield::CellStatus;
 
     #[test]
     fn should_return_dimensions() {
