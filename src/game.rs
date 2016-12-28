@@ -1,4 +1,5 @@
 use battlefield::Battlefield;
+use cell_status::CellStatus;
 use results::ShootError;
 use results::ShootError::*;
 use results::ShootOk;
@@ -69,6 +70,32 @@ impl Game {
         } else {
             self.current_player = self.current_player.next();
             Ok(Miss)
+        }
+    }
+
+    pub fn get_cell(
+        &self,
+        player: Player,
+        x: Dimension,
+        y: Dimension,
+    ) -> CellStatus {
+        let bf = if player == P1 {
+            self.battlefields.get(0).unwrap()
+        } else {
+            self.battlefields.get(1).unwrap()
+        };
+        let cell = bf.get_cell(x, y).unwrap();
+        let filled = cell.ship_type_id().is_some();
+        let shot = cell.is_shot();
+
+        if filled {
+            if shot {
+                CellStatus::Hit
+            } else {
+                CellStatus::Ship
+            }
+        } else {
+            CellStatus::Empty
         }
     }
 }
@@ -180,7 +207,7 @@ mod test {
 
         assert_eq!(CellStatus::Empty, game.get_cell(P2, 2, 2));
         assert_eq!(CellStatus::Ship, game.get_cell(P2, 0, 0));
-        game.shoot(P2, 0, 0);
+        game.shoot(P2, 0, 0).unwrap();
         assert_eq!(CellStatus::Hit, game.get_cell(P2, 0, 0));
     }
 
