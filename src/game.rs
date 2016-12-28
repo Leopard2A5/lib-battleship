@@ -98,6 +98,32 @@ impl Game {
             CellStatus::Empty
         }
     }
+
+    pub fn get_opponent_cell(
+        &self,
+        player: Player,
+        x: Dimension,
+        y: Dimension,
+    ) -> CellStatus {
+        let bf = if player == P1 {
+            self.battlefields.get(0).unwrap()
+        } else {
+            self.battlefields.get(1).unwrap()
+        };
+        let cell = bf.get_cell(x, y).unwrap();
+        let filled = cell.ship_type_id().is_some();
+        let shot = cell.is_shot();
+
+        if shot {
+            if filled {
+                CellStatus::Hit
+            } else {
+                CellStatus::Miss
+            }
+        } else {
+            CellStatus::Empty
+        }
+    }
 }
 
 #[cfg(test)]
@@ -216,17 +242,18 @@ mod test {
         let mut game = build_test_game();
 
         game.shoot(P2, 2, 2).unwrap();
-        assert_eq!(CellStatus::Empty,  game.get_cell(P2, 2, 2));
+        assert_eq!(CellStatus::Empty, game.get_cell(P2, 2, 2));
     }
 
     #[test]
     fn can_get_cell_status_for_opponent() {
+        let mut game = build_test_game();
 
-    }
-
-    #[test]
-    fn opponent_cell_status_doesnt_show_ships() {
-
+        assert_eq!(CellStatus::Empty, game.get_opponent_cell(P2, 0, 0));
+        game.shoot(P2, 0, 0).unwrap();
+        assert_eq!(CellStatus::Hit, game.get_opponent_cell(P2, 0, 0));
+        game.shoot(P2, 2, 2).unwrap();
+        assert_eq!(CellStatus::Miss, game.get_opponent_cell(P2, 2, 2));
     }
 
     fn build_test_game() -> Game {
