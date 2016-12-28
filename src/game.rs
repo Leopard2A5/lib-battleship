@@ -213,7 +213,10 @@ mod test {
 
     #[test]
     fn owner_cell_status_doesnt_show_misses() {
+        let mut game = build_test_game();
 
+        game.shoot(P2, 2, 2).unwrap();
+        assert_eq!(CellStatus::Empty,  game.get_cell(P2, 2, 2));
     }
 
     #[test]
