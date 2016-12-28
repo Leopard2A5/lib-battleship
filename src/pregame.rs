@@ -1,3 +1,8 @@
+//! This module is used to prepare a game of battleship.
+//! With the `PreGame` struct you can specify battlefield dimensions and
+//! the types of ships to play with. Furthermore the players place their ships
+//! using `PreGame` before actually starting the game.
+
 use battlefield::Battlefield;
 use results::GameError;
 use results::GameStartError;
