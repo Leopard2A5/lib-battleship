@@ -19,7 +19,7 @@ use super::Dimension;
 use super::ShipTypeId;
 
 #[derive(PartialEq, Debug)]
-/// foo
+/// Builder type for a game of battleship.
 pub struct PreGame {
     width: Dimension,
     height: Dimension,
@@ -30,6 +30,13 @@ pub struct PreGame {
 
 /// bar
 impl PreGame {
+    /// Creates a new instance.
+    /// ## Parameters
+    /// * `width` The number of columns
+    /// * `height` The number of lines
+    ///
+    /// ## Errors
+    /// * `IllegalDimensions` will be returned if `width` or `height` are less than 2.
     pub fn new(
         width: Dimension,
         height: Dimension,
