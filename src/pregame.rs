@@ -18,8 +18,8 @@ use std::collections::HashSet;
 use super::Dimension;
 use super::ShipTypeId;
 
-#[derive(PartialEq, Debug)]
 /// Builder type for a game of battleship.
+#[derive(PartialEq, Debug)]
 pub struct PreGame {
     width: Dimension,
     height: Dimension,
