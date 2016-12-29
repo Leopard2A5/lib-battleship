@@ -1,6 +1,7 @@
 //! Everything you need to set up a game of battleship.
 
 use battlefield::Battlefield;
+use battlefield::Dimensional;
 use battlefield::ShipType;
 use common::Orientation;
 use common::Player;
@@ -65,16 +66,6 @@ impl PreGame {
         } else {
             Ok(Game::new(self.ship_types, self.battlefields))
         }
-    }
-
-    /// Returns the number of columns for the battlefields in this `PreGame`.
-    pub fn width(&self) -> Dimension {
-        self.width
-    }
-
-    /// Returns the number of lines for the battlefields in this `PreGame`.
-    pub fn height(&self) -> Dimension {
-        self.height
     }
 
     /// Add a ship type to the game. Returns a unique id for the new ship type.
@@ -255,8 +246,19 @@ impl PreGame {
     }
 }
 
+impl Dimensional for PreGame {
+    fn width(&self) -> Dimension {
+        self.width
+    }
+
+    fn height(&self) -> Dimension {
+        self.height
+    }
+}
+
 #[cfg(test)]
 mod test {
+    use battlefield::Dimensional;
     use pregame::PreGame;
     use results::GameError::IllegalDimensions;
     use common::Player::*;

@@ -2,13 +2,14 @@
 
 use battlefield::Battlefield;
 use battlefield::CellStatus;
+use battlefield::Dimensional;
+use battlefield::ShipStatus;
+use battlefield::ShipType;
 use results::ShootError;
 use results::ShootError::*;
 use results::ShootOk;
 use results::ShootOk::*;
 use common::Player::{self, P1};
-use battlefield::ShipStatus;
-use battlefield::ShipType;
 use super::Dimension;
 
 /// Struct representing a running game of battleship.
@@ -37,14 +38,6 @@ impl Game {
             current_player: P1,
             ship_status: ShipStatus::new(&ship_types),
         }
-    }
-
-    pub fn width(&self) -> Dimension {
-        self.battlefields.first().unwrap().width()
-    }
-
-    pub fn height(&self) -> Dimension {
-        self.battlefields.first().unwrap().height()
     }
 
     pub fn current_player(&self) -> Player {
@@ -135,17 +128,28 @@ impl Game {
     }
 }
 
+impl Dimensional for Game {
+    fn width(&self) -> Dimension {
+        self.battlefields.first().unwrap().width()
+    }
+
+    fn height(&self) -> Dimension {
+        self.battlefields.first().unwrap().height()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use battlefield::Battlefield;
+    use battlefield::CellStatus;
+    use battlefield::Dimensional;
+    use battlefield::ShipType;
     use results::ShootError::*;
     use results::ShootOk::*;
     use super::Game;
     use common::Orientation::*;
     use common::Player::*;
     use pregame::PreGame;
-    use battlefield::ShipType;
-    use battlefield::CellStatus;
 
     #[test]
     fn should_return_dimensions() {
