@@ -1,6 +1,11 @@
 //! Everything you need to set up a game of battleship.
 
 use battlefield::Battlefield;
+use battlefield::ShipType;
+use common::Orientation;
+use common::Player;
+use common::Player::*;
+use game::Game;
 use results::GameError;
 use results::GameStartError;
 use results::GameStartError::*;
@@ -8,13 +13,8 @@ use results::PlaceError;
 use results::PlaceError::*;
 use results::ShipTypeError;
 use results::ShipTypeError::*;
-use game::Game;
-use common::Orientation;
-use common::Player;
-use common::Player::*;
-use battlefield::ShipType;
-use std::collections::HashSet;
 use std::cmp::max;
+use std::collections::HashSet;
 use super::Dimension;
 use super::ShipTypeId;
 
