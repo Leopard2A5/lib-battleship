@@ -31,11 +31,11 @@ pub struct PreGame {
 /// bar
 impl PreGame {
     /// Creates a new instance.
-    /// ## Parameters
+    /// # Parameters
     /// * `width` The number of columns
     /// * `height` The number of lines
     ///
-    /// ## Errors
+    /// # Errors
     /// * `IllegalDimensions` will be returned if `width` or `height` are less than 2.
     pub fn new(
         width: Dimension,
@@ -52,6 +52,11 @@ impl PreGame {
         })
     }
 
+    /// Consume this `PreGame` and provide a `Game` from it.
+    /// Requires that both players have placed all their ships.
+    /// # Errors
+    /// * `NoShipsPlaced` if no player has placed any ships yet
+    /// * `NotAllShipsPlaced` if not all ships have been placed yet
     pub fn start(self) -> Result<Game, (Self, GameStartError)> {
         if self.placed_ships.len() == 0 {
             Err((self, NoShipsPlaced))
@@ -62,14 +67,24 @@ impl PreGame {
         }
     }
 
+    /// Returns the number of columns for the battlefields in this `PreGame`.
     pub fn width(&self) -> Dimension {
         self.width
     }
 
+    /// Returns the number of lines for the battlefields in this `PreGame`.
     pub fn height(&self) -> Dimension {
         self.height
     }
 
+    /// Add a ship type to the game. Returns a unique id for the new ship type.
+    /// # Parameters
+    /// * `name` The name of the ship type.
+    /// * `length` The length of the ship type.
+    ///
+    /// # Errors
+    /// * `IllegalShipLength` If the ship type's length is smaller than 1.
+    /// * `ShipTooLongForBattlefield` If the ship length is longer than the width or height of the battlefield.
     pub fn add_ship_type(
         &mut self,
         name: &'static str,
@@ -86,10 +101,38 @@ impl PreGame {
         }
     }
 
+    /// Returns a copy of the list of ship types.
     pub fn ship_types(&self) -> Vec<ShipType> {
         self.ship_types.clone()
     }
 
+    /// Place a ship of a previously added ship type on the battlefield.
+    /// # Parameters
+    /// * `player` The player who owns the ship
+    /// * `ship_type_id` The id of the ship type of the ship to be placed.
+    /// * `x` The x coordinate of the ship
+    /// * `y` The y coordinate of the ship
+    /// * `orientation` The orientation of the ship
+    ///
+    /// # Errors
+    /// * `AlreadyPlaced` In case the player has already placed a ship of that ship type.
+    /// * `OutOfBounds` If the ship would exceed any boundary of the battlefield.
+    /// * `UnknownShipTypeId` If the ship type id is invalid.
+    /// * `CellOccupied` If the ship would occupy an already occupied coordinate.
+    ///
+    /// # Examples
+    /// Player 1 places a corvette of length 2 on (0, 0) and (1, 0)
+    ///
+    /// ```
+    /// # use lib_battleship::common::Orientation::Horizontal;
+    /// # use lib_battleship::common::Player::P1;
+    /// # use lib_battleship::pregame::PreGame;
+    /// #
+    /// let mut pregame = PreGame::new(3, 3).unwrap();
+    /// let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
+    /// let result = pregame.place_ship(P1, corvette_id, 0, 0, Horizontal);
+    /// // check result here
+    /// ```
     pub fn place_ship(
         &mut self,
         player: Player,
