@@ -11,6 +11,7 @@ use battlefield::ShipStatus;
 use battlefield::ShipType;
 use super::Dimension;
 
+/// Struct representing a running game of battleship.
 #[derive(PartialEq, Debug)]
 pub struct Game {
     ship_types: Vec<ShipType>,
@@ -20,6 +21,12 @@ pub struct Game {
 }
 
 impl Game {
+    /// Creates a new instance. Use of this function is discouraged. You should rather go through
+    /// the `PreGame` struct.
+    /// # Parameters
+    /// * `ship_types` A non-emptpy vector of `ShipType`s.
+    /// * `battlefields` A Vector of exactly two `Battlefield`s where player 1 owns the
+    ///   battlefield at index 0 and player 2 owns the one at index 1.
     pub fn new(
         ship_types: Vec<ShipType>,
         battlefields: Vec<Battlefield>,

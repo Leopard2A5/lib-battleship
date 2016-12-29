@@ -28,7 +28,7 @@ pub struct PreGame {
     battlefields: Vec<Battlefield>,
 }
 
-/// bar
+/// Builder style struct for battleship.
 impl PreGame {
     /// Creates a new instance.
     /// # Parameters
