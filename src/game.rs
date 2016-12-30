@@ -40,10 +40,42 @@ impl Game {
         }
     }
 
+    /// This function determines who's turn it is.
     pub fn current_player(&self) -> Player {
         self.current_player
     }
 
+    /// Shoot at a player's battlefield.
+    /// # Parameters
+    /// * `target_player` The player to be shot at.
+    /// * `x` The x coordinate.
+    /// * `y` The y coordinate.
+    ///
+    /// # Errors
+    /// * `NotThisPlayersTurn` if `target_player` is the same as what's returned by `current_player()`.
+    /// * `OutOfBounds` if the given coordinates are outside the boundaries of the battlefield.
+    ///
+    /// # Examples
+    /// ```
+    /// # use lib_battleship::common::Player::{P1, P2};
+    /// # use lib_battleship::pregame::PreGame;
+    /// # use lib_battleship::game::Game;
+    /// # use lib_battleship::common::Orientation::Horizontal;
+    /// # use lib_battleship::results::ShootOk;
+    /// # let mut pregame = PreGame::new(3, 3).unwrap();
+    /// # let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
+    /// # pregame.place_ship(P1, corvette_id, 0, 0, Horizontal).unwrap();
+    /// # pregame.place_ship(P2, corvette_id, 0, 0, Horizontal).unwrap();
+    /// # let mut game = pregame.start().unwrap();
+    /// #
+    /// match game.shoot(P2, 0, 0).unwrap() {
+    ///     ShootOk::Hit => println!("hit!"),
+    ///     ShootOk::Miss => println!("miss!"),
+    ///     ShootOk::Destroyed => println!("ship destroyed!"),
+    ///     ShootOk::WinningShot => println!("you won!")
+    /// }
+    /// // note the call to `unwrap()`: shoot may return an error (see above).
+    /// ```
     pub fn shoot(
         &mut self,
         target_player: Player,
