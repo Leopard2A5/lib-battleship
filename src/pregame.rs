@@ -117,7 +117,7 @@ impl PreGame {
     /// ```
     /// # use lib_battleship::common::Orientation::Horizontal;
     /// # use lib_battleship::common::Player::P1;
-    /// # use lib_battleship::pregame::PreGame;
+    /// # use lib_battleship::PreGame;
     /// #
     /// let mut pregame = PreGame::new(3, 3).unwrap();
     /// let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();

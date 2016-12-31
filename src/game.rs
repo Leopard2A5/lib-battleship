@@ -58,8 +58,8 @@ impl Game {
     /// # Examples
     /// ```
     /// # use lib_battleship::common::Player::{P1, P2};
-    /// # use lib_battleship::pregame::PreGame;
-    /// # use lib_battleship::game::Game;
+    /// # use lib_battleship::PreGame;
+    /// # use lib_battleship::Game;
     /// # use lib_battleship::common::Orientation::Horizontal;
     /// # use lib_battleship::results::ShootOk;
     /// # let mut pregame = PreGame::new(3, 3).unwrap();

@@ -2,12 +2,15 @@
 //!
 //! It implements the core logic for every game of battleship.
 
-pub mod pregame;
-pub mod game;
-pub mod results;
+pub use self::game::Game;
+pub use self::pregame::PreGame;
+
 pub mod common;
+pub mod results;
 
 mod battlefield;
+mod game;
+mod pregame;
 
 /// Dimension type for battleship.
 pub type Dimension = usize;
