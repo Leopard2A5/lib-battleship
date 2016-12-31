@@ -1,5 +1,5 @@
-use super::ShipType;
 use common::Player::{self, P1};
+use common::ShipType;
 use ::Dimension;
 use ::ShipTypeId;
 use std::mem;
@@ -53,9 +53,9 @@ impl ShipStatus {
 
 #[cfg(test)]
 mod test {
-    use battlefield::ShipType;
     use super::ShipStatus;
     use common::Player::*;
+    use common::ShipType;
 
     #[test]
     fn should_sum_player_health() {

@@ -1,11 +1,11 @@
 //! Everything you need to set up a game of battleship.
 
 use battlefield::Battlefield;
-use battlefield::ShipType;
 use common::Dimensional;
 use common::Orientation;
 use common::Player;
 use common::Player::*;
+use common::ShipType;
 use game::Game;
 use results::GameError;
 use results::GameStartError;

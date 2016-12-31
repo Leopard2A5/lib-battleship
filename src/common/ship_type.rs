@@ -1,5 +1,6 @@
 use ::Dimension;
 
+/// Represents a ship type in the game.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct ShipType {
     name: &'static str,
@@ -7,6 +8,10 @@ pub struct ShipType {
 }
 
 impl ShipType {
+    /// Create a new ship type.
+    /// # Parameters
+    /// * `name` the name of the ship type.
+    /// * `length` The length of the ship type.
     pub fn new(
         name: &'static str,
         length: Dimension,
@@ -17,10 +22,12 @@ impl ShipType {
         }
     }
 
+    /// Returns the name.
     pub fn name(&self) -> &'static str {
         self.name
     }
 
+    /// Returns the length.
     pub fn length(&self) -> Dimension {
         self.length
     }
