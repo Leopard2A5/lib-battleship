@@ -1,6 +1,6 @@
 [package]
 name = "lib_battleship"
-version = "1.0.0"
+version = "1.0.1"
 authors = ["René Perschon <rperschon85@gmail.com>"]
 description = "A library for battleship implementations."
 homepage = "https://github.com/Leopard2A5/lib-battleship"
