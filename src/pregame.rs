@@ -1,8 +1,8 @@
 //! Everything you need to set up a game of battleship.
 
 use battlefield::Battlefield;
-use battlefield::Dimensional;
 use battlefield::ShipType;
+use common::Dimensional;
 use common::Orientation;
 use common::Player;
 use common::Player::*;
@@ -258,14 +258,14 @@ impl Dimensional for PreGame {
 
 #[cfg(test)]
 mod test {
-    use battlefield::Dimensional;
+    use common::Dimensional;
+    use common::Orientation::*;
+    use common::Player::*;
     use pregame::PreGame;
     use results::GameError::IllegalDimensions;
-    use common::Player::*;
     use results::PlaceError::*;
     use results::GameStartError::*;
     use results::ShipTypeError::*;
-    use common::Orientation::*;
 
     #[test]
     fn constructor_should_check_dimensions() {

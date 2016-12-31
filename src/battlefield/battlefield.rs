@@ -1,6 +1,7 @@
 use results::GameError::{self, IllegalDimensions};
 use super::Cell;
 use ::Dimension;
+use common::Dimensional;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Battlefield {
@@ -36,14 +37,6 @@ impl Battlefield {
         ret
     }
 
-    pub fn width(&self) -> Dimension {
-        self.cells.first().unwrap().len()
-    }
-
-    pub fn height(&self) -> Dimension {
-        self.cells.len()
-    }
-
     pub fn get_cell(
         &self,
         x: Dimension,
@@ -63,9 +56,20 @@ impl Battlefield {
     }
 }
 
+impl Dimensional for Battlefield {
+    fn width(&self) -> Dimension {
+        self.cells.first().unwrap().len()
+    }
+
+    fn height(&self) -> Dimension {
+        self.cells.len()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::Battlefield;
+    use common::Dimensional;
 
     #[test]
     fn should_give_out_cell_references() {

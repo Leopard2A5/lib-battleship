@@ -1,10 +1,10 @@
 //! Implementations for a started game of battleship.
 
 use battlefield::Battlefield;
-use battlefield::Dimensional;
 use battlefield::ShipStatus;
 use battlefield::ShipType;
 use common::CellStatus;
+use common::Dimensional;
 use common::Player::{self, P1};
 use results::ShootError;
 use results::ShootError::*;
@@ -191,9 +191,9 @@ impl Dimensional for Game {
 #[cfg(test)]
 mod test {
     use battlefield::Battlefield;
-    use battlefield::Dimensional;
     use battlefield::ShipType;
     use common::CellStatus;
+    use common::Dimensional;
     use common::Orientation::*;
     use common::Player::*;
     use pregame::PreGame;
