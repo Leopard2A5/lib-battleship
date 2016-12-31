@@ -74,7 +74,7 @@ impl Game {
     ///     ShootOk::Destroyed => println!("ship destroyed!"),
     ///     ShootOk::WinningShot => println!("you won!")
     /// }
-    /// // note the call to `unwrap()`: shoot may return an error (see above).
+    /// // note that you shouldn't just call `unwrap()` after `shoot()`, don't ignore errors.
     /// ```
     pub fn shoot(
         &mut self,
