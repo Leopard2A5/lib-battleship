@@ -6,7 +6,7 @@ A Rust library for battleship implementations.
 ## How to use
 You can set up the game by creating and configuring a `PreGame` object like so:
 ```rust
-extern crate lib-battleship;
+extern crate lib_battleship;
 
 use lib_battleship::PreGame;
 use lib_battleship::common::Player::*;
