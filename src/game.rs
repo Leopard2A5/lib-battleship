@@ -6,6 +6,7 @@ use common::CellStatus;
 use common::Dimensional;
 use common::Player::{self, P1};
 use common::ShipType;
+use common::ShipTypeContainer;
 use results::ShootError;
 use results::ShootError::*;
 use results::ShootOk;
@@ -188,6 +189,12 @@ impl Dimensional for Game {
     }
 }
 
+impl ShipTypeContainer for Game {
+    fn ship_types(&self) -> Vec<ShipType> {
+        self.ship_types.clone()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use battlefield::Battlefield;
@@ -196,6 +203,7 @@ mod test {
     use common::Orientation::*;
     use common::Player::*;
     use common::ShipType;
+    use common::ShipTypeContainer;
     use pregame::PreGame;
     use results::ShootError::*;
     use results::ShootOk::*;
@@ -317,6 +325,16 @@ mod test {
         assert_eq!(CellStatus::Hit, game.get_opponent_cell(P2, 0, 0));
         game.shoot(P2, 2, 2).unwrap();
         assert_eq!(CellStatus::Miss, game.get_opponent_cell(P2, 2, 2));
+    }
+
+    #[test]
+    fn should_return_contained_ship_types() {
+        let game = build_test_game();
+        let mut types = game.ship_types();
+
+        assert_eq!(2, types.len());
+        types.clear();
+        assert_eq!(2, game.ship_types().len());
     }
 
     fn build_test_game() -> Game {

@@ -6,6 +6,7 @@ use common::Orientation;
 use common::Player;
 use common::Player::*;
 use common::ShipType;
+use common::ShipTypeContainer;
 use game::Game;
 use results::GameError;
 use results::GameStartError;
@@ -90,11 +91,6 @@ impl PreGame {
             self.ship_types.push(typ);
             Ok(self.ship_types.len() - 1)
         }
-    }
-
-    /// Returns a copy of the list of ship types.
-    pub fn ship_types(&self) -> Vec<ShipType> {
-        self.ship_types.clone()
     }
 
     /// Place a ship of a previously added ship type on the battlefield.
@@ -256,11 +252,18 @@ impl Dimensional for PreGame {
     }
 }
 
+impl ShipTypeContainer for PreGame {
+    fn ship_types(&self) -> Vec<ShipType> {
+        self.ship_types.clone()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use common::Dimensional;
     use common::Orientation::*;
     use common::Player::*;
+    use common::ShipTypeContainer;
     use pregame::PreGame;
     use results::GameError::IllegalDimensions;
     use results::PlaceError::*;
