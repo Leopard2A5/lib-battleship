@@ -43,4 +43,5 @@ pub enum ShootOk {
 pub enum ShootError {
     NotThisPlayersTurn,
     OutOfBounds,
+    GameOver,
 }

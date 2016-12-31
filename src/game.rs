@@ -4,7 +4,7 @@ use battlefield::Battlefield;
 use battlefield::ShipStatus;
 use common::CellStatus;
 use common::Dimensional;
-use common::Player::{self, P1};
+use common::Player::{self, P1, P2};
 use common::ShipType;
 use common::ShipTypeContainer;
 use results::ShootError;
@@ -85,6 +85,9 @@ impl Game {
     ) -> Result<ShootOk, ShootError> {
         if self.current_player == target_player {
             return Err(NotThisPlayersTurn);
+        }
+        if let Some(_) = self.get_winner() {
+            return Err(GameOver);
         }
         let bf_num = if target_player == P1 {0} else {1};
         let cell = self.battlefields.get_mut(bf_num).unwrap()
@@ -175,6 +178,17 @@ impl Game {
             }
         } else {
             CellStatus::Empty
+        }
+    }
+
+    /// Gets the winner of the game, if any.
+    pub fn get_winner(&self) -> Option<Player> {
+        if self.ship_status.get_sum_health(P1) == 0 {
+            Some(P2)
+        } else if self.ship_status.get_sum_health(P2) == 0 {
+            Some(P1)
+        } else {
+            None
         }
     }
 }
@@ -335,6 +349,26 @@ mod test {
         assert_eq!(2, types.len());
         types.clear();
         assert_eq!(2, game.ship_types().len());
+    }
+
+    #[test]
+    fn should_not_allow_shots_after_game_ends() {
+        let mut game = build_test_game();
+        game.shoot(P2, 0, 0).unwrap();
+        game.shoot(P2, 1, 0).unwrap();
+        game.shoot(P2, 0, 1).unwrap();
+
+        assert_eq!(Err(GameOver), game.shoot(P2, 2, 2));
+        assert_eq!(Some(P1), game.get_winner());
+
+        let mut game = build_test_game();
+        game.shoot(P2, 2, 2).unwrap();
+        game.shoot(P1, 0, 0).unwrap();
+        game.shoot(P1, 1, 0).unwrap();
+        game.shoot(P1, 0, 1).unwrap();
+
+        assert_eq!(Err(GameOver), game.shoot(P1, 2, 2));
+        assert_eq!(Some(P2), game.get_winner());
     }
 
     fn build_test_game() -> Game {
