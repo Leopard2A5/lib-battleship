@@ -107,6 +107,15 @@ impl Game {
         }
     }
 
+    /// Gets the status of the cell (`x`, `y`) owned by `player`.
+    /// Does not display missed shots, i.e. misses are considered `Empty` (see `get_opponent_cell`).
+    /// # Parameters
+    /// * `player` determines which battlefield to consider, i.e. the owner of the battlefield.
+    /// * `x` the x coordinate
+    /// * `y` the y coordinate
+    ///
+    /// # Panics
+    /// Panics if the x and/or y coordinate is out of bounds.
     pub fn get_cell(
         &self,
         player: Player,
@@ -133,6 +142,15 @@ impl Game {
         }
     }
 
+    /// Gets the status of the *opponent* cell (`x`, `y`) owned by `player`.
+    /// Does not display unhit ship cells, i.e. unhit ship cells are considered `Empty`.
+    /// # Parameters
+    /// * `player` determines which battlefield to consider, i.e. the owner of the battlefield.
+    /// * `x` the x coordinate
+    /// * `y` the y coordinate
+    ///
+    /// # Panics
+    /// Panics if the x and/or y coordinate is out of bounds.
     pub fn get_opponent_cell(
         &self,
         player: Player,
