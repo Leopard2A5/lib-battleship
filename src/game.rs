@@ -55,6 +55,7 @@ impl Game {
     /// # Errors
     /// * `NotThisPlayersTurn` if `target_player` is the same as what's returned by `current_player()`.
     /// * `OutOfBounds` if the given coordinates are outside the boundaries of the battlefield.
+    /// * `GameOver` if the game is already finished
     ///
     /// # Examples
     /// ```
