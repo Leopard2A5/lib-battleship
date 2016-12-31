@@ -47,6 +47,8 @@ let mut game = pregame.start().unwrap();
 From now on, players can take turns shooting at each other's ships. A player can keep shooting as long as they score hits.
 
 ```rust
+/// game validates that it's the shooting player's
+/// turn and that they don't shoot out of bounds.
 match game.shoot(P2, 0, 0).unwrap() {
   ShootOk::Hit => println!("hit!"),
   ShootOk::Miss => println!("miss!"),
