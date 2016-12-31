@@ -2,5 +2,9 @@
 name = "lib_battleship"
 version = "1.0.0"
 authors = ["René Perschon <rperschon85@gmail.com>"]
+description = "A library for battleship implementations."
+homepage = "https://github.com/Leopard2A5/lib-battleship"
+license = "X11"
+keywords = ["games", "battleship"]
 
 [dependencies]
