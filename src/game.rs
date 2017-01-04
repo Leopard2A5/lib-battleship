@@ -67,8 +67,8 @@ impl Game {
     /// # use lib_battleship::results::ShootOk;
     /// # let mut pregame = PreGame::new(3, 3).unwrap();
     /// # let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
-    /// # pregame.place_ship(P1, corvette.clone(), 0, 0, Horizontal).unwrap();
-    /// # pregame.place_ship(P2, corvette.clone(), 0, 0, Horizontal).unwrap();
+    /// # pregame.place_ship(P1, &corvette, 0, 0, Horizontal).unwrap();
+    /// # pregame.place_ship(P2, &corvette, 0, 0, Horizontal).unwrap();
     /// # let mut game = pregame.start().unwrap();
     /// #
     /// match game.shoot(P2, 0, 0).unwrap() {
@@ -378,10 +378,10 @@ mod test {
         let mut pregame = PreGame::new(3, 3).unwrap();
         let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
         let submarine = pregame.add_ship_type("Submarine", 1).unwrap();
-        pregame.place_ship(P1, corvette.clone(), 0, 0 , Horizontal).unwrap();
-        pregame.place_ship(P2, corvette.clone(), 0, 0 , Horizontal).unwrap();
-        pregame.place_ship(P1, submarine.clone(), 0, 1, Horizontal).unwrap();
-        pregame.place_ship(P2, submarine.clone(), 0, 1, Horizontal).unwrap();
+        pregame.place_ship(P1, &corvette, 0, 0 , Horizontal).unwrap();
+        pregame.place_ship(P2, &corvette, 0, 0 , Horizontal).unwrap();
+        pregame.place_ship(P1, &submarine, 0, 1, Horizontal).unwrap();
+        pregame.place_ship(P2, &submarine, 0, 1, Horizontal).unwrap();
 
         pregame.start().unwrap()
     }

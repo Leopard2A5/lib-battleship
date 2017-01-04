@@ -29,11 +29,11 @@ Then each player has to place all their ships on the battlefield. Each player ha
 
 ```rust
 // pregame also validates the placement of each ship.
-pregame.place_ship(P1, corvette.clone(), 0, 0, Horizontal).unwrap();
-pregame.place_ship(P1, sub.clone(), 9, 9, Horizontal).unwrap();
+pregame.place_ship(P1, &corvette, 0, 0, Horizontal).unwrap();
+pregame.place_ship(P1, &sub, 9, 9, Horizontal).unwrap();
 
-pregame.place_ship(P2, corvette.clone(), 5, 5, Vertical).unwrap();
-pregame.place_ship(P2, sub.clone(), 3, 7, Horizontal).unwrap();
+pregame.place_ship(P2, &corvette, 5, 5, Vertical).unwrap();
+pregame.place_ship(P2, &sub, 3, 7, Horizontal).unwrap();
 ```
 
 When all ships have been placed, start the game like so:
