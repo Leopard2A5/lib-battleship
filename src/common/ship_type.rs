@@ -1,8 +1,10 @@
 use ::Dimension;
+use ::ShipTypeId;
 
 /// Represents a ship type in the game.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct ShipType {
+    id: ShipTypeId,
     name: &'static str,
     length: Dimension,
 }
@@ -13,13 +15,20 @@ impl ShipType {
     /// * `name` the name of the ship type.
     /// * `length` The length of the ship type.
     pub fn new(
+        id: ShipTypeId,
         name: &'static str,
         length: Dimension,
     ) -> Self {
         ShipType {
+            id: id,
             name: name,
             length: length,
         }
+    }
+
+    /// Returns the id.
+    pub fn id(&self) -> ShipTypeId {
+        self.id
     }
 
     /// Returns the name.
@@ -39,7 +48,8 @@ mod test {
 
     #[test]
     fn constructor_should_work() {
-        let typ = ShipType::new("foo", 5);
+        let typ = ShipType::new(7, "foo", 5);
+        assert_eq!(7, typ.id());
         assert_eq!("foo", typ.name());
         assert_eq!(5, typ.length());
     }

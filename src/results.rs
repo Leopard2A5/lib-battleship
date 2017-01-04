@@ -18,7 +18,7 @@ pub enum ShipTypeError {
 pub enum PlaceError {
     AlreadyPlaced,
     OutOfBounds,
-    UnknownShipTypeId,
+    UnknownShipType,
     CellOccupied,
 }
 

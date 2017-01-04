@@ -4,6 +4,7 @@ use ::Dimension;
 use ::ShipTypeId;
 use std::mem;
 use std::cmp;
+use std::rc::Rc;
 
 #[derive(PartialEq, Debug)]
 pub struct ShipStatus {
@@ -13,7 +14,7 @@ pub struct ShipStatus {
 
 impl ShipStatus {
     pub fn new(
-        ship_types: &Vec<ShipType>,
+        ship_types: &Vec<Rc<ShipType>>,
     ) -> Self {
         ShipStatus {
             status_p1: ship_types.iter().map(|st| st.length()).collect(),
@@ -56,10 +57,11 @@ mod test {
     use super::ShipStatus;
     use common::Player::*;
     use common::ShipType;
+    use std::rc::Rc;
 
     #[test]
     fn should_sum_player_health() {
-        let types = vec!(ShipType::new("Corvette", 2));
+        let types = vec!(Rc::new(ShipType::new(0, "Corvette", 2)));
         let mut status = ShipStatus::new(&types);
 
         assert_eq!(2, status.get_sum_health(P1));

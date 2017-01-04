@@ -12,11 +12,12 @@ use results::ShootError::*;
 use results::ShootOk;
 use results::ShootOk::*;
 use super::Dimension;
+use std::rc::Rc;
 
 /// Struct representing a running game of battleship.
 #[derive(PartialEq, Debug)]
 pub struct Game {
-    ship_types: Vec<ShipType>,
+    ship_types: Vec<Rc<ShipType>>,
     battlefields: Vec<Battlefield>,
     current_player: Player,
     ship_status: ShipStatus,
@@ -30,7 +31,7 @@ impl Game {
     /// * `battlefields` A Vector of exactly two `Battlefield`s where player 1 owns the
     ///   battlefield at index 0 and player 2 owns the one at index 1.
     pub fn new(
-        ship_types: Vec<ShipType>,
+        ship_types: Vec<Rc<ShipType>>,
         battlefields: Vec<Battlefield>,
     ) -> Self {
         Game {
@@ -65,9 +66,9 @@ impl Game {
     /// # use lib_battleship::common::Orientation::Horizontal;
     /// # use lib_battleship::results::ShootOk;
     /// # let mut pregame = PreGame::new(3, 3).unwrap();
-    /// # let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
-    /// # pregame.place_ship(P1, corvette_id, 0, 0, Horizontal).unwrap();
-    /// # pregame.place_ship(P2, corvette_id, 0, 0, Horizontal).unwrap();
+    /// # let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
+    /// # pregame.place_ship(P1, corvette.clone(), 0, 0, Horizontal).unwrap();
+    /// # pregame.place_ship(P2, corvette.clone(), 0, 0, Horizontal).unwrap();
     /// # let mut game = pregame.start().unwrap();
     /// #
     /// match game.shoot(P2, 0, 0).unwrap() {
@@ -205,7 +206,7 @@ impl Dimensional for Game {
 }
 
 impl ShipTypeContainer for Game {
-    fn ship_types(&self) -> Vec<ShipType> {
+    fn ship_types(&self) -> Vec<Rc<ShipType>> {
         self.ship_types.clone()
     }
 }
@@ -223,10 +224,11 @@ mod test {
     use results::ShootError::*;
     use results::ShootOk::*;
     use super::Game;
+    use std::rc::Rc;
 
     #[test]
     fn should_return_dimensions() {
-        let ship_types = vec!(ShipType::new("Corvette", 2));
+        let ship_types = vec!(Rc::new(ShipType::new(0, "Corvette", 2)));
         let bf1 = Battlefield::new(2, 3).unwrap();
         let bf2 = bf1.clone();
         let battlefields = vec!(bf1, bf2);
@@ -374,12 +376,12 @@ mod test {
 
     fn build_test_game() -> Game {
         let mut pregame = PreGame::new(3, 3).unwrap();
-        let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
-        let submarine_id = pregame.add_ship_type("Submarine", 1).unwrap();
-        pregame.place_ship(P1, corvette_id, 0, 0 , Horizontal).unwrap();
-        pregame.place_ship(P2, corvette_id, 0, 0 , Horizontal).unwrap();
-        pregame.place_ship(P1, submarine_id, 0, 1, Horizontal).unwrap();
-        pregame.place_ship(P2, submarine_id, 0, 1, Horizontal).unwrap();
+        let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
+        let submarine = pregame.add_ship_type("Submarine", 1).unwrap();
+        pregame.place_ship(P1, corvette.clone(), 0, 0 , Horizontal).unwrap();
+        pregame.place_ship(P2, corvette.clone(), 0, 0 , Horizontal).unwrap();
+        pregame.place_ship(P1, submarine.clone(), 0, 1, Horizontal).unwrap();
+        pregame.place_ship(P2, submarine.clone(), 0, 1, Horizontal).unwrap();
 
         pregame.start().unwrap()
     }

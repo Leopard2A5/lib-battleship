@@ -17,6 +17,7 @@ use results::ShipTypeError;
 use results::ShipTypeError::*;
 use std::cmp::max;
 use std::collections::HashSet;
+use std::rc::Rc;
 use super::Dimension;
 use super::ShipTypeId;
 
@@ -25,7 +26,7 @@ use super::ShipTypeId;
 pub struct PreGame {
     width: Dimension,
     height: Dimension,
-    ship_types: Vec<ShipType>,
+    ship_types: Vec<Rc<ShipType>>,
     placed_ships: HashSet<(Player, ShipTypeId)>,
     battlefields: Vec<Battlefield>,
 }
@@ -81,22 +82,23 @@ impl PreGame {
         &mut self,
         name: &'static str,
         length: Dimension,
-    ) -> Result<ShipTypeId, ShipTypeError> {
+    ) -> Result<Rc<ShipType>, ShipTypeError> {
         if length == 0 {
             Err(IllegalShipLength)
         } else if length > max(self.width(), self.height()) {
             Err(ShipTooLongForBattlefield)
         } else {
-            let typ = ShipType::new(name, length);
-            self.ship_types.push(typ);
-            Ok(self.ship_types.len() - 1)
+            let typ = ShipType::new(self.ship_types.len(), name, length);
+            let rc = Rc::new(typ);
+            self.ship_types.push(rc.clone());
+            Ok(rc)
         }
     }
 
     /// Place a ship of a previously added ship type on the battlefield.
     /// # Parameters
     /// * `player` The player who owns the ship
-    /// * `ship_type_id` The id of the ship type of the ship to be placed.
+    /// * `ship_type` The ship type of the ship to be placed.
     /// * `x` The x coordinate of the ship
     /// * `y` The y coordinate of the ship
     /// * `orientation` The orientation of the ship
@@ -104,7 +106,7 @@ impl PreGame {
     /// # Errors
     /// * `AlreadyPlaced` In case the player has already placed a ship of that ship type.
     /// * `OutOfBounds` If the ship would exceed any boundary of the battlefield.
-    /// * `UnknownShipTypeId` If the ship type id is invalid.
+    /// * `UnknownShipType` If the ship type id is invalid.
     /// * `CellOccupied` If the ship would occupy an already occupied coordinate.
     ///
     /// # Examples
@@ -116,28 +118,37 @@ impl PreGame {
     /// # use lib_battleship::PreGame;
     /// #
     /// let mut pregame = PreGame::new(3, 3).unwrap();
-    /// let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
-    /// let result = pregame.place_ship(P1, corvette_id, 0, 0, Horizontal);
+    /// let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
+    /// let result = pregame.place_ship(P1, corvette, 0, 0, Horizontal);
     /// // check result here
     /// ```
     pub fn place_ship(
         &mut self,
         player: Player,
-        ship_type_id: ShipTypeId,
+        ship_type: Rc<ShipType>,
         x: Dimension,
         y: Dimension,
         orientation: Orientation,
     ) -> Result<(), PlaceError> {
-        let ship_type = self.ship_types
-            .get(ship_type_id)
-            .ok_or(UnknownShipTypeId)?.clone();
-        self.assert_ship_not_yet_placed(player, ship_type_id)?;
+        self.assert_ship_type_known(&ship_type)?;
+        self.assert_ship_not_yet_placed(player, ship_type.id())?;
         self.assert_ship_placement_in_bounds(&ship_type, x, y, orientation)?;
         let affected_cell_coords = self.get_affected_cell_coords(&ship_type, x, y, orientation);
         self.assert_cells_free(player, &affected_cell_coords)?;
 
-        self.do_place_ship(player, ship_type_id, &affected_cell_coords);
-        self.placed_ships.insert((player, ship_type_id));
+        self.do_place_ship(player, ship_type.id(), &affected_cell_coords);
+        self.placed_ships.insert((player, ship_type.id()));
+        Ok(())
+    }
+
+    fn assert_ship_type_known(
+        &self,
+        ship_type: &Rc<ShipType>,
+    ) -> Result<(), PlaceError> {
+        self.ship_types.iter()
+            .find(|x| *x == ship_type )
+            .ok_or(UnknownShipType)?;
+
         Ok(())
     }
 
@@ -253,7 +264,7 @@ impl Dimensional for PreGame {
 }
 
 impl ShipTypeContainer for PreGame {
-    fn ship_types(&self) -> Vec<ShipType> {
+    fn ship_types(&self) -> Vec<Rc<ShipType>> {
         self.ship_types.clone()
     }
 }
@@ -263,12 +274,14 @@ mod test {
     use common::Dimensional;
     use common::Orientation::*;
     use common::Player::*;
+    use common::ShipType;
     use common::ShipTypeContainer;
     use pregame::PreGame;
     use results::GameError::IllegalDimensions;
     use results::PlaceError::*;
     use results::GameStartError::*;
     use results::ShipTypeError::*;
+    use std::rc::Rc;
 
     #[test]
     fn constructor_should_check_dimensions() {
@@ -290,12 +303,12 @@ mod test {
         let mut game = PreGame::new(3, 3).unwrap();
         assert_eq!(0, game.ship_types().len());
 
-        let ship_type_id = game.add_ship_type("Corvette", 2).unwrap();
-        assert_eq!(0, ship_type_id);
+        let ship_type = game.add_ship_type("Corvette", 2).unwrap();
         assert_eq!(1, game.ship_types().len());
 
         let types = game.ship_types();
         let st = types.first().unwrap();
+        assert_eq!(ship_type, *st);
         assert_eq!("Corvette", st.name());
         assert_eq!(2, st.length());
     }
@@ -318,39 +331,51 @@ mod test {
     #[test]
     fn should_allow_placing_ships() {
         let mut game = PreGame::new(3, 3).unwrap();
-        let corvette_id = game.add_ship_type("Corvette", 2).unwrap();
+        let corvette = game.add_ship_type("Corvette", 2).unwrap();
 
-        assert_eq!(Ok(()), game.place_ship(P1, corvette_id, 0, 0, Horizontal));
-        assert_eq!(Ok(()), game.place_ship(P2, corvette_id, 0, 0, Vertical));
+        assert_eq!(Ok(()), game.place_ship(P1, corvette.clone(), 0, 0, Horizontal));
+        assert_eq!(Ok(()), game.place_ship(P2, corvette.clone(), 0, 0, Vertical));
     }
 
     #[test]
     fn should_disallow_placing_ships_twice() {
         let mut game = PreGame::new(3, 3).unwrap();
-        let corvette_id = game.add_ship_type("Corvette", 2).unwrap();
+        let corvette = game.add_ship_type("Corvette", 2).unwrap();
 
-        assert_eq!(Ok(()), game.place_ship(P1, corvette_id, 0, 0, Horizontal));
-        assert_eq!(Err(AlreadyPlaced), game.place_ship(P1, corvette_id, 0, 1, Horizontal));
+        assert_eq!(Ok(()), game.place_ship(P1, corvette.clone(), 0, 0, Horizontal));
+        assert_eq!(Err(AlreadyPlaced), game.place_ship(P1, corvette.clone(), 0, 1, Horizontal));
+    }
+
+    #[test]
+    fn should_disallow_placing_ships_of_unknown_type() {
+        let mut game = PreGame::new(3, 3).unwrap();
+        let jetski = game.add_ship_type("Jetski", 1).unwrap();
+        let car = Rc::new(ShipType::new(0, "Car", 1));
+        let fake_jetski = Rc::new(ShipType::new(0, "Jetski", 1));
+
+        assert_eq!(Err(UnknownShipType), game.place_ship(P1, car.clone(), 0, 0, Horizontal));
+        assert_eq!(jetski, fake_jetski);
+        assert_eq!(Ok(()), game.place_ship(P1, fake_jetski, 0, 0, Horizontal));
     }
 
     #[test]
     fn should_disallow_placing_ships_out_of_bounds() {
         let mut game = PreGame::new(3, 3).unwrap();
-        let corvette_id = game.add_ship_type("Corvette", 2).unwrap();
+        let corvette = game.add_ship_type("Corvette", 2).unwrap();
 
-        assert_eq!(Err(OutOfBounds), game.place_ship(P1, corvette_id, 2, 0, Horizontal));
-        assert_eq!(Err(OutOfBounds), game.place_ship(P1, corvette_id, 0, 2, Vertical));
-        assert_eq!(Ok(()), game.place_ship(P1, corvette_id, 1, 0, Horizontal));
+        assert_eq!(Err(OutOfBounds), game.place_ship(P1, corvette.clone(), 2, 0, Horizontal));
+        assert_eq!(Err(OutOfBounds), game.place_ship(P1, corvette.clone(), 0, 2, Vertical));
+        assert_eq!(Ok(()), game.place_ship(P1, corvette.clone(), 1, 0, Horizontal));
     }
 
     #[test]
     fn should_disallow_placing_ships_on_top_of_each_other() {
         let mut game = PreGame::new(3, 3).unwrap();
-        let corvette_id = game.add_ship_type("Corvette", 2).unwrap();
-        let frigate_id = game.add_ship_type("Frigate", 2).unwrap();
+        let corvette = game.add_ship_type("Corvette", 2).unwrap();
+        let frigate = game.add_ship_type("Frigate", 2).unwrap();
 
-        assert_eq!(Ok(()), game.place_ship(P2, corvette_id, 0, 0, Horizontal));
-        assert_eq!(Err(CellOccupied), game.place_ship(P2, frigate_id, 1, 0, Vertical));
+        assert_eq!(Ok(()), game.place_ship(P2, corvette, 0, 0, Horizontal));
+        assert_eq!(Err(CellOccupied), game.place_ship(P2, frigate, 1, 0, Vertical));
     }
 
     #[test]
@@ -368,12 +393,12 @@ mod test {
     #[test]
     fn should_not_start_when_not_all_ships_placed() {
         let mut game = PreGame::new(2, 2).unwrap();
-        let submarine_id = game.add_ship_type("Submarine", 1).unwrap();
-        let corvette_id = game.add_ship_type("Corvette", 2).unwrap();
+        let submarine = game.add_ship_type("Submarine", 1).unwrap();
+        let corvette = game.add_ship_type("Corvette", 2).unwrap();
 
-        game.place_ship(P1, submarine_id, 0, 0, Horizontal).unwrap();
-        game.place_ship(P2, submarine_id, 0, 0, Horizontal).unwrap();
-        game.place_ship(P1, corvette_id, 0, 1, Horizontal).unwrap();
+        game.place_ship(P1, submarine.clone(), 0, 0, Horizontal).unwrap();
+        game.place_ship(P2, submarine.clone(), 0, 0, Horizontal).unwrap();
+        game.place_ship(P1, corvette.clone(), 0, 1, Horizontal).unwrap();
 
         if let Err((_, NotAllShipsPlaced)) = game.start() {
             // ok
@@ -385,9 +410,9 @@ mod test {
     #[test]
     fn should_start_game() {
         let mut game = PreGame::new(2, 2).unwrap();
-        let submarine_id = game.add_ship_type("Submarine", 1).unwrap();
-        game.place_ship(P1, submarine_id, 0, 0, Horizontal).unwrap();
-        game.place_ship(P2, submarine_id, 0, 0, Horizontal).unwrap();
+        let submarine = game.add_ship_type("Submarine", 1).unwrap();
+        game.place_ship(P1, submarine.clone(), 0, 0, Horizontal).unwrap();
+        game.place_ship(P2, submarine.clone(), 0, 0, Horizontal).unwrap();
 
         if let Ok(_) = game.start() {
             // ok

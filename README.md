@@ -21,19 +21,19 @@ let mut pregame = PreGame::new(10, 10).unwrap();
 // add ship types
 // `PreGame` validates that a ship is no shorter
 // than 1 in length, thus the call to `unwrap()`.
-let sub_id = pregame.add_ship_type("Submarine", 1).unwrap();
-let corvette_id = pregame.add_ship_type("Corvette", 2).unwrap();
+let sub = pregame.add_ship_type("Submarine", 1).unwrap();
+let corvette = pregame.add_ship_type("Corvette", 2).unwrap();
 ```
 
 Then each player has to place all their ships on the battlefield. Each player has one ship of every ship type.
 
 ```rust
 // pregame also validates the placement of each ship.
-pregame.place_ship(P1, corvette_id, 0, 0, Horizontal).unwrap();
-pregame.place_ship(P1, sub_id, 9, 9, Horizontal).unwrap();
+pregame.place_ship(P1, corvette.clone(), 0, 0, Horizontal).unwrap();
+pregame.place_ship(P1, sub.clone(), 9, 9, Horizontal).unwrap();
 
-pregame.place_ship(P2, corvette_id, 5, 5, Vertical).unwrap();
-pregame.place_ship(P2, sub_id, 3, 7, Horizontal).unwrap();
+pregame.place_ship(P2, corvette.clone(), 5, 5, Vertical).unwrap();
+pregame.place_ship(P2, sub.clone(), 3, 7, Horizontal).unwrap();
 ```
 
 When all ships have been placed, start the game like so:
