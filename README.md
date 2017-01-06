@@ -1,7 +1,7 @@
 # lib-battleship
 [![Build Status](https://travis-ci.org/Leopard2A5/lib-battleship.svg?branch=master)](https://travis-ci.org/Leopard2A5/lib-battleship)
 
-A Rust library for battleship implementations.
+A Rust library for battleship implementations. Find the documentation [here](https://docs.rs/lib_battleship/).
 
 ## How to use
 You can set up the game by creating and configuring a `PreGame` object like so:
