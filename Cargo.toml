@@ -2,7 +2,7 @@
 name = "lib_battleship"
 
 version = "2.0.0"
-documentation = "https://docs.rs/lib_battleship/2.0.0/lib_battleship/"
+documentation = "https://docs.rs/lib_battleship/"
 
 authors = ["René Perschon <rperschon85@gmail.com>"]
 description = "A library for battleship implementations."
