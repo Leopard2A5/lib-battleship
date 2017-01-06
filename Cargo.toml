@@ -8,6 +8,7 @@ authors = ["René Perschon <rperschon85@gmail.com>"]
 description = "A library for battleship implementations."
 homepage = "https://github.com/Leopard2A5/lib-battleship"
 license = "X11"
+readme = "README.md"
 keywords = ["games", "battleship"]
 
 [dependencies]
