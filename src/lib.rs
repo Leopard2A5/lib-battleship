@@ -5,6 +5,8 @@
 //!
 //! ```
 //! use lib_battleship::PreGame;
+//! use lib_battleship::common::CellStatus;
+//! use lib_battleship::common::Dimensional;
 //! use lib_battleship::common::Player::*;
 //! use lib_battleship::common::Orientation::*;
 //! use lib_battleship::results::ShootOk;
@@ -27,6 +29,20 @@
 //!
 //! pregame.place_ship(P2, &corvette, 5, 5, Vertical).unwrap();
 //! pregame.place_ship(P2, &sub, 3, 7, Horizontal).unwrap();
+//!
+//! // Display a player's battlefield by iterating over its cells like so:
+//! for y in 0..pregame.height() {
+//!     for x in 0..pregame.width() {
+//!         // PreGame::get_cell only returns Empty or Ship.
+//!         let char = match pregame.get_cell(P1, x, y) {
+//!             CellStatus::Empty => " ",
+//!             CellStatus::Ship => "X",
+//!             _ => unreachable!()
+//!         };
+//!         print!("{}", char);
+//!     }
+//!     println!("");
+//! }
 //!
 //! // When all ships have been placed, start the game. PreGame::start() checks that all ships
 //! // have been placed and will complain if that's not the case.

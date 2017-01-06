@@ -1,6 +1,7 @@
 //! Everything you need to set up a game of battleship.
 
 use battlefield::Battlefield;
+use common::CellStatus;
 use common::Dimensional;
 use common::Orientation;
 use common::Player;
@@ -251,6 +252,34 @@ impl PreGame {
             cell.set_ship_type_id(ship_type_id);
         }
     }
+
+    /// Gets the status of the cell (`x`, `y`) owned by `player`.
+    /// # Parameters
+    /// * `player` determines which battlefield to consider, i.e. the owner of the battlefield.
+    /// * `x` the x coordinate
+    /// * `y` the y coordinate
+    ///
+    /// # Panics
+    /// Panics if the x and/or y coordinate is out of bounds.
+    pub fn get_cell(
+        &self,
+        player: Player,
+        x: Dimension,
+        y: Dimension,
+    ) -> CellStatus {
+        let bf = if player == P1 {
+            self.battlefields.get(0).unwrap()
+        } else {
+            self.battlefields.get(1).unwrap()
+        };
+        let cell = bf.get_cell(x, y).unwrap();
+
+        if let Some(_) = cell.ship_type_id() {
+            CellStatus::Ship
+        } else {
+            CellStatus::Empty
+        }
+    }
 }
 
 impl Dimensional for PreGame {
@@ -271,6 +300,7 @@ impl ShipTypeContainer for PreGame {
 
 #[cfg(test)]
 mod test {
+    use common::CellStatus;
     use common::Dimensional;
     use common::Orientation::*;
     use common::Player::*;
@@ -421,4 +451,13 @@ mod test {
         }
     }
 
+    #[test]
+    fn can_get_cell_status() {
+        let mut game = PreGame::new(2, 2).unwrap();
+        let submarine = game.add_ship_type("Submarine", 1).unwrap();
+
+        assert_eq!(CellStatus::Empty, game.get_cell(P1, 0, 0));
+        game.place_ship(P1, &submarine, 0, 0, Horizontal).unwrap();
+        assert_eq!(CellStatus::Ship, game.get_cell(P1, 0, 0));
+    }
 }

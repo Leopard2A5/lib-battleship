@@ -36,6 +36,23 @@ pregame.place_ship(P2, &corvette, 5, 5, Vertical).unwrap();
 pregame.place_ship(P2, &sub, 3, 7, Horizontal).unwrap();
 ```
 
+Display a player's battlefield by iterating over its cells like so:
+
+```rust
+for y in 0..pregame.height() {
+    for x in 0..pregame.width() {
+        // PreGame::get_cell only returns Empty or Ship.
+        let char = match pregame.get_cell(P1, x, y) {
+            CellStatus::Empty => " ",
+            CellStatus::Ship => "X",
+            _ => unreachable!()
+        };
+        print!("{}", char);
+    }
+    println!("");
+}
+```
+
 When all ships have been placed, start the game like so:
 
 ```rust
