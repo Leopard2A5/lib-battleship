@@ -48,6 +48,11 @@
 //! // have been placed and will complain if that's not the case.
 //! let mut game = pregame.start().unwrap();
 //!
+//! // Use Game::get_cell and Game::get_opponent_cell to display the respective
+//! // battlefields, similar to PreGame::get_cell above. Use Game::get_cell to display
+//! // a battlefield to its owner and Game::get_opponent_cell to display their adversary's
+//! // battlefield with unhit cells appearing empty.
+//!
 //! // From now on, players can take turns shooting at each other's ships. A player can
 //! // keep shooting as long as they score hits.
 //!
