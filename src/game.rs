@@ -12,12 +12,12 @@ use results::ShootError::*;
 use results::ShootOk;
 use results::ShootOk::*;
 use super::Dimension;
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// Struct representing a running game of battleship.
 #[derive(PartialEq, Debug)]
 pub struct Game {
-    ship_types: Vec<Rc<ShipType>>,
+    ship_types: Vec<Arc<ShipType>>,
     battlefields: Vec<Battlefield>,
     current_player: Player,
     ship_status: ShipStatus,
@@ -31,7 +31,7 @@ impl Game {
     /// * `battlefields` A Vector of exactly two `Battlefield`s where player 1 owns the
     ///   battlefield at index 0 and player 2 owns the one at index 1.
     pub fn new(
-        ship_types: Vec<Rc<ShipType>>,
+        ship_types: Vec<Arc<ShipType>>,
         battlefields: Vec<Battlefield>,
     ) -> Self {
         Game {
@@ -206,7 +206,7 @@ impl Dimensional for Game {
 }
 
 impl ShipTypeContainer for Game {
-    fn ship_types(&self) -> Vec<Rc<ShipType>> {
+    fn ship_types(&self) -> Vec<Arc<ShipType>> {
         self.ship_types.clone()
     }
 }
@@ -224,11 +224,11 @@ mod test {
     use results::ShootError::*;
     use results::ShootOk::*;
     use super::Game;
-    use std::rc::Rc;
+    use std::sync::Arc;
 
     #[test]
     fn should_return_dimensions() {
-        let ship_types = vec!(Rc::new(ShipType::new(0, "Corvette", 2)));
+        let ship_types = vec!(Arc::new(ShipType::new(0, "Corvette", 2)));
         let bf1 = Battlefield::new(2, 3).unwrap();
         let bf2 = bf1.clone();
         let battlefields = vec!(bf1, bf2);

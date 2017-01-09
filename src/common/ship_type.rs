@@ -2,7 +2,7 @@ use ::Dimension;
 use ::ShipTypeId;
 
 /// Represents a ship type in the game.
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(PartialEq, Debug)]
 pub struct ShipType {
     id: ShipTypeId,
     name: &'static str,

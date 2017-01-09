@@ -18,7 +18,7 @@ use results::ShipTypeError;
 use results::ShipTypeError::*;
 use std::cmp::max;
 use std::collections::HashSet;
-use std::rc::Rc;
+use std::sync::Arc;
 use super::Dimension;
 use super::ShipTypeId;
 
@@ -27,7 +27,7 @@ use super::ShipTypeId;
 pub struct PreGame {
     width: Dimension,
     height: Dimension,
-    ship_types: Vec<Rc<ShipType>>,
+    ship_types: Vec<Arc<ShipType>>,
     placed_ships: HashSet<(Player, ShipTypeId)>,
     battlefields: Vec<Battlefield>,
 }
@@ -83,14 +83,14 @@ impl PreGame {
         &mut self,
         name: &'static str,
         length: Dimension,
-    ) -> Result<Rc<ShipType>, ShipTypeError> {
+    ) -> Result<Arc<ShipType>, ShipTypeError> {
         if length == 0 {
             Err(IllegalShipLength)
         } else if length > max(self.width(), self.height()) {
             Err(ShipTooLongForBattlefield)
         } else {
             let typ = ShipType::new(self.ship_types.len(), name, length);
-            let rc = Rc::new(typ);
+            let rc = Arc::new(typ);
             self.ship_types.push(rc.clone());
             Ok(rc)
         }
@@ -126,7 +126,7 @@ impl PreGame {
     pub fn place_ship(
         &mut self,
         player: Player,
-        ship_type: &Rc<ShipType>,
+        ship_type: &Arc<ShipType>,
         x: Dimension,
         y: Dimension,
         orientation: Orientation,
@@ -144,7 +144,7 @@ impl PreGame {
 
     fn assert_ship_type_known(
         &self,
-        ship_type: &Rc<ShipType>,
+        ship_type: &Arc<ShipType>,
     ) -> Result<(), PlaceError> {
         self.ship_types.iter()
             .find(|x| *x == ship_type )
@@ -293,7 +293,7 @@ impl Dimensional for PreGame {
 }
 
 impl ShipTypeContainer for PreGame {
-    fn ship_types(&self) -> Vec<Rc<ShipType>> {
+    fn ship_types(&self) -> Vec<Arc<ShipType>> {
         self.ship_types.clone()
     }
 }
@@ -311,7 +311,7 @@ mod test {
     use results::PlaceError::*;
     use results::GameStartError::*;
     use results::ShipTypeError::*;
-    use std::rc::Rc;
+    use std::sync::Arc;
 
     #[test]
     fn constructor_should_check_dimensions() {
@@ -380,8 +380,8 @@ mod test {
     fn should_disallow_placing_ships_of_unknown_type() {
         let mut game = PreGame::new(3, 3).unwrap();
         let jetski = game.add_ship_type("Jetski", 1).unwrap();
-        let car = Rc::new(ShipType::new(0, "Car", 1));
-        let fake_jetski = Rc::new(ShipType::new(0, "Jetski", 1));
+        let car = Arc::new(ShipType::new(0, "Car", 1));
+        let fake_jetski = Arc::new(ShipType::new(0, "Jetski", 1));
 
         assert_eq!(Err(UnknownShipType), game.place_ship(P1, &car, 0, 0, Horizontal));
         assert_eq!(jetski, fake_jetski);
