@@ -1,0 +1,6 @@
+[package]
+name = "lib_battleship_core"
+version = "0.1.0"
+authors = ["René Perschon <rene.perschon@payu.com>"]
+
+[dependencies]

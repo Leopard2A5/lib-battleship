@@ -11,4 +11,10 @@ license = "X11"
 readme = "README.md"
 keywords = ["games", "battleship"]
 
+[workspace]
+members = [
+    "lib-battleship-core"
+]
+
 [dependencies]
+lib_battleship_core = { version = "*", path = "lib_battleship_core" }
